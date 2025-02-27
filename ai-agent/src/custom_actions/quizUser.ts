@@ -180,9 +180,18 @@ class CharacterQuiz {
         if (magnitude1 === 0 || magnitude2 === 0) return 0;
 
         const similarity = dotProduct / (magnitude1 * magnitude2);
-        
+        let normalized_score = 0;
+        if (similarity < 0.2) {
+            normalized_score = similarity * 3;
+        } else if (similarity < 0.5) {
+            normalized_score = similarity * 1.5;
+        } else if (similarity < 0.8) {
+            normalized_score = similarity * 1.1;
+        } else {
+            normalized_score = similarity;
+        }
         // Ensure the result is between 0 and 1
-        return Math.max(0, Math.min(1, similarity));
+        return Math.max(0, Math.min(1, normalized_score));
     }
 }
 

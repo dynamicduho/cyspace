@@ -19,8 +19,16 @@ let waitingForAnswer = false;
 
 // Display welcome message
 console.log(`I'm ${quizManager.getCharacterName()}, and I'm ready to test your knowledge about me. You'll get something cool if you know me well!`);
-console.log("Type 'quiz' to start a quiz, or 'exit' to quit.");
 console.log("-----------------------------------------------------------");
+
+// Start the quiz immediately
+quizActive = true;
+console.log(quizManager.start());
+const firstQuestion = quizManager.getNextQuestion();
+if (firstQuestion) {
+  console.log(firstQuestion);
+  waitingForAnswer = true;
+}
 
 // Process user input
 async function processUserInput(input: string): Promise<void> {
@@ -28,18 +36,6 @@ async function processUserInput(input: string): Promise<void> {
   if (input.toLowerCase() === 'exit') {
     console.log("Thanks for chatting! Goodbye!");
     rl.close();
-    return;
-  }
-
-  // Check for quiz command
-  if (input.toLowerCase() === 'quiz' && !quizActive) {
-    quizActive = true;
-    console.log(quizManager.start());
-    const question = quizManager.getNextQuestion();
-    if (question) {
-      console.log(question);
-      waitingForAnswer = true;
-    }
     return;
   }
 
@@ -57,18 +53,22 @@ async function processUserInput(input: string): Promise<void> {
       // Quiz is complete
       quizActive = false;
       waitingForAnswer = false;
-      console.log("\nType 'quiz' to start another quiz, or 'exit' to quit.");
+      
+      // Exit the program after a brief pause
+      console.log("\nThank you for taking the quiz! Goodbye!");
+      setTimeout(() => {
+        rl.close();
+        process.exit(0);
+      }, 1500);
     }
     return;
   }
 
-  // Regular conversation
-  if (!quizActive) {
-    if (input.toLowerCase().includes('quiz')) {
-      console.log(`Would you like to start a quiz about ${quizManager.getCharacterName()}? Type 'quiz' to begin!`);
-    } else {
-      console.log(`I'm ${quizManager.getCharacterName()}! I'm here to chat and quiz you about myself. Type 'quiz' to start a quiz!`);
-    }
+  // If not in quiz mode and not waiting for an answer (this shouldn't happen in this version)
+  if (!quizActive && !waitingForAnswer) {
+    console.log("The quiz has ended. Exiting...");
+    rl.close();
+    process.exit(0);
   }
 }
 
@@ -76,8 +76,10 @@ async function processUserInput(input: string): Promise<void> {
 function handleUserInput(): void {
   rl.question('> ', async (input) => {
     await processUserInput(input);
-    // Always continue the conversation
-    handleUserInput();
+    // Continue the conversation only if we're still active
+    if (quizActive) {
+      handleUserInput();
+    }
   });
 }
 
