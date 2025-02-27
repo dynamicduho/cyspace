@@ -1,3 +1,6 @@
 [submodule "lib/solmate"]
 	path = lib/solmate
 	url = https://github.com/transmissions11/solmate
+[submodule "smart-contracts/lib/solmate"]
+	path = smart-contracts/lib/solmate
+	url = https://github.com/transmissions11/solmate
