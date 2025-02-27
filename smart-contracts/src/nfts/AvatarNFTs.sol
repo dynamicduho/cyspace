@@ -14,7 +14,7 @@ contract AvatarNFT is ERC721, ERC721Burnable, ERC721URIStorage {
         Shoes
     }
 
-    // Mapping to record which collection a token belongs to
+    // collection mapping
     mapping(uint256 => CollectionType) public tokenCollection;
 
     constructor(string memory name, string memory symbol) ERC721(name, symbol) {}
@@ -39,10 +39,6 @@ contract AvatarNFT is ERC721, ERC721Burnable, ERC721URIStorage {
 
     // The following functions override required functions from parent contracts.
 
-    function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage) {
-        super._burn(tokenId);
-    }
-
     function tokenURI(uint256 tokenId)
         public
         view
@@ -50,5 +46,15 @@ contract AvatarNFT is ERC721, ERC721Burnable, ERC721URIStorage {
         returns (string memory)
     {
         return super.tokenURI(tokenId);
+    }
+
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override(ERC721, ERC721URIStorage)
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
     }
 }
