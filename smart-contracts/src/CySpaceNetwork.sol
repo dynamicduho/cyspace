@@ -56,7 +56,7 @@ contract CySpaceNetwork is Owned {
     // friend1 is adding friend2 as friend
     function addFriend(address _friend1, address _friend2) external onlyAuthorized {
         require(_friend1 != _friend2, "Cannot add yourself");
-        friends[_friend1][_frien2] = true;
+        friends[_friend1][_friend2] = true;
         emit FriendAdded(_friend1, _friend2);
     }
 

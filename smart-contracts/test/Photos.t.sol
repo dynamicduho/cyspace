@@ -24,7 +24,6 @@ contract CySpaceNetworkPhotoTest is Test {
     function testCreatePhoto() public {
         string memory caption = "This is a valid caption for my photo.";
 
-        vm.prank(alice);
         vm.expectEmit(true, false, false, true);
         emit PhotoCreated(alice, caption, block.timestamp);
 
