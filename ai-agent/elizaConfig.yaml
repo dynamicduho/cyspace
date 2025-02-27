@@ -1,0 +1,10 @@
+# CySpace AI Agent Configuration
+
+# Paths are relative to the core/src directory
+actions:
+  - name: quizUser
+    path: ../../src/custom_actions/quizUser.ts
+
+
+# Character configuration
+character: eric 
