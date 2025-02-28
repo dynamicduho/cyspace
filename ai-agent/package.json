@@ -18,6 +18,7 @@
   "license": "ISC",
   "dependencies": {
     "@elizaos/core": "^0.1.0",
+    "elizaos-okto-plugin": "0.0.0-dev.41",
     "ethers": "^6.10.0",
     "fs": "^0.0.1-security",
     "path": "^0.12.7",
