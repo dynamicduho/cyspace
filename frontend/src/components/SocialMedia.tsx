@@ -31,7 +31,10 @@ const SocialMedia = () => {
     const navigate = useNavigate();
 
     const handleFriendClick = (friend: Friend) => {
-        navigate(`/u/${friend.name.toLowerCase().replace(/(\w)\w*\s+(\w\w*)/, '$1$2')}`);
+      window?.open?.('http://localhost:9999/', '_blank').focus();
+        // navigate(`http://localhost:9999/`, {
+        //    
+        // });
       };
   return (
     
