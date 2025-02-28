@@ -10,6 +10,7 @@ import {
     getTokens,
     useOkto,
   } from "@okto_web3/react-sdk";
+import { useNavigate } from 'react-router-dom';
 
 const RetroSocialApp = () => {
   // Sample data for friends
@@ -30,7 +31,11 @@ const RetroSocialApp = () => {
   ];
   const oktoClient = useOkto();
     const userSWA = oktoClient.userSWA;
+    const navigate = useNavigate();
 
+    const handleFriendClick = (friend: Friend) => {
+        navigate(`/u/${friend.name.toLowerCase().replace(/(\w)\w*\s+(\w\w*)/, '$1$2')}`);
+      };
   return (
     
     <div className="bg-amber-50 min-h-screen flex justify-center">
@@ -59,7 +64,7 @@ const RetroSocialApp = () => {
             
             <div className="space-y-6">
               {friends.map(friend => (
-                <div key={friend.id} className="flex items-center">
+                <div key={friend.id} onClick={() => handleFriendClick(friend)} className="flex items-center hover:scale-105 cursor-pointer hover:bg-sky-200">
                   <div className={`w-12 h-12 ${friend.color} rounded-full mr-4 border-2 border-gray-800`}></div>
                   <span className="text-lg text-gray-800">{friend.name}</span>
                   {friend.online && (
