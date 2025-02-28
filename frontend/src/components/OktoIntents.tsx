@@ -11,9 +11,7 @@ import {
   import { googleLogout } from "@react-oauth/google";
   import { useNavigate } from "react-router-dom";
   import GetButton from "./GetButton";
-  import { useRef, useState } from "react";
-  import { ChevronLeft, ChevronRight } from "lucide-react";
-
+   
 export default function OktoIntents() {
 const oktoClient = useOkto();
 const navigate = useNavigate();
@@ -26,6 +24,7 @@ const userSWA = oktoClient.userSWA;
         // Perform Google OAuth logout and remove stored token
         googleLogout();
         localStorage.removeItem("googleIdToken");
+        oktoClient.sessionClear();
         navigate("/");
         return { result: "logout success" };
         } catch (error) {
