@@ -1,0 +1,18 @@
+{
+  "name": "cyspace-backend",
+  "version": "1.0.0",
+  "description": "a backebd",
+  "main": "app.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "ethstorage-sdk": "^3.0.0",
+    "express": "^4.21.2",
+    "multer": "^1.4.5-lts.1"
+  }
+}

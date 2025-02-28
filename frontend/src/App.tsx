@@ -8,6 +8,7 @@ import RawTransaction from "./pages/RawTransaction";
 import TransferNFT from "./pages/TransferNFT";
 import TransferTokens from "./pages/TransferTokens";
 import ProfilePage from "./components/ProfilePage";
+import PostAlbum from "./pages/PostAlbum";
 function App() {
   const oktoClient = useOkto();
 
@@ -26,6 +27,8 @@ function App() {
         <Route path="/transfertoken" element={<TransferTokens />} />
         <Route path="/transfernft" element={<TransferNFT />} />
         <Route path="/createnftcollection" element={<CreateNft />} />
+        <Route path="/post/album" element={<PostAlbum />} />
+        <Route path="/post/diaryentry" element={<></>} />
         <Route path="/rawtransaction" element={<RawTransaction />} />
       </Routes>
     </>

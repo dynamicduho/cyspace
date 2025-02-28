@@ -17,6 +17,7 @@ contract CySpaceNetwork is Owned {
         string caption;
         address contentAddress;
         uint256 timestamp;
+        string[] keys;
     }
 
     /// mappings
@@ -71,9 +72,24 @@ contract CySpaceNetwork is Owned {
         emit DiaryCreated(msg.sender, _text, block.timestamp);
     }
 
-    function createPhoto(string calldata _caption, address _contentAddress) external {
+    function createPhoto(
+        string calldata _caption, 
+        address _contentAddress, 
+        string[] calldata _keys
+    ) external {
         if (bytes(_caption).length > 140) revert CaptionTooLong();
-        photos[msg.sender].push(Photo(msg.sender, _caption, _contentAddress, block.timestamp));
+        photos[msg.sender].push();
+        Photo storage newPhoto = photos[msg.sender][photos[msg.sender].length - 1];
+
+        newPhoto.author = msg.sender;
+        newPhoto.caption = _caption;
+        newPhoto.contentAddress = _contentAddress;
+        newPhoto.timestamp = block.timestamp;
+
+        for (uint i = 0; i < _keys.length; i++) {
+            newPhoto.keys.push(_keys[i]);
+        }
+
         emit PhotoCreated(msg.sender, _caption, block.timestamp);
     }
 }
