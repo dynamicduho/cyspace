@@ -1,18 +1,15 @@
 import React from 'react';
 import OktoIntents from './OktoIntents';
-import {
-    getAccount,
-    getChains,
-    getOrdersHistory,
-    getPortfolio,
-    getPortfolioActivity,
-    getPortfolioNFT,
-    getTokens,
-    useOkto,
-  } from "@okto_web3/react-sdk";
+import { useOkto } from "@okto_web3/react-sdk";
 import { useNavigate } from 'react-router-dom';
 
-const RetroSocialApp = () => {
+interface Friend {
+  id: number;
+  name: string;
+  profilePic: string;
+}
+
+const SocialMedia = () => {
   // Sample data for friends
   const friends = [
     { id: 1, name: 'Sarah Johnson', online: true, color: 'bg-teal-300' },
@@ -38,10 +35,10 @@ const RetroSocialApp = () => {
       };
   return (
     
-    <div className="bg-amber-50 min-h-screen flex justify-center">
+    <div className="bg-amber-50 min-h-screen flex justify-center bg-cyworld-pink">
       <div className="w-full border-2 border-gray-800 rounded-lg overflow-hidden">
         {/* Top navigation bar */}
-        <div className="bg-red-400 p-4 flex items-center justify-between border-b-2 border-gray-800">
+        <div className="bg-cyworld-blue p-4 flex items-center justify-between border-b-2 border-gray-800">
           <div className="text-white text-3xl font-bold">CyWorld</div>
           
           <div className="bg-white rounded-full w-full max-w-md mx-4 px-4 py-2 flex items-center">
@@ -53,7 +50,7 @@ const RetroSocialApp = () => {
           </div>
           
           <div className="flex space-x-2">
-            <div>{userSWA}</div>
+            <div>{userSWA?.slice(0, 6)}...{userSWA?.slice(-6)}</div>
           </div>
         </div>
         
@@ -82,7 +79,7 @@ const RetroSocialApp = () => {
           {/* Main content area */}
           <div className="flex-1 p-4">
             {/* Stories section */}
-            <div className="bg-white rounded-lg border-2 border-gray-800 p-4 mb-4">
+            <div className="bg-[#E0CCFF] rounded-lg border-2 border-gray-800 p-4 mb-4">
               <div className="flex space-x-8 justify-center">
                 {/* Your Story with plus sign */}
                 <div className="flex flex-col items-center">
@@ -91,7 +88,7 @@ const RetroSocialApp = () => {
                       <span className="text-red-400 text-3xl font-bold">+</span>
                     </div>
                   </div>
-                  <span className="mt-2 text-sm text-center">Your Story</span>
+                  <span className="mt-2 text-center">Your Story</span>
                 </div>
                 
                 {stories.map(story => !story.isYourStory && (
@@ -99,13 +96,19 @@ const RetroSocialApp = () => {
                     <div className="w-20 h-20 border-4 border-red-400 rounded-full flex items-center justify-center">
                       <div className={`w-16 h-16 ${story.color} rounded-full`}></div>
                     </div>
-                    <span className="mt-2 text-sm text-center">{story.name}</span>
+                    <span className="mt-2 text-center">{story.name}</span>
                   </div>
                 ))}
               </div>
             </div>
             
             {/* Feed would go here */}
+            <div>
+            </div>
+            
+            
+
+
             <div className="overflow-y-auto max-h-[400px]">
                 <OktoIntents />
             </div>
@@ -116,4 +119,4 @@ const RetroSocialApp = () => {
   );
 };
 
-export default RetroSocialApp;
+export default SocialMedia;

@@ -73,7 +73,7 @@ export default function LoginPage() {
             <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
             <div className="w-3 h-3 rounded-full bg-green-400"></div>
           </div>
-          <div className="flex items-center text-xs text-gray-500 font-pixel">
+          <div className="flex items-center text-xs text-gray-500">
             <span>TODAY</span>
             <span className="mx-1 text-yellow-500">{new Date().toLocaleDateString()}</span>
           </div>
@@ -83,16 +83,16 @@ export default function LoginPage() {
           {/* Left Column - Profile Area */}
           <div className="border-r border-gray-200 pr-4 md:col-span-1">
             <div className="bg-white p-2 rounded mb-3 border border-gray-200">
-              <h2 className="font-bubbly text-center text-blue-500 mb-2 border-b border-gray-200 pb-1 text-lg">TODAY is...</h2>
+              <h2 className="text-center text-blue-500 mb-2 border-b border-gray-200 pb-1 text-lg">TODAY is...</h2>
               <div className="pixel-avatar bg-gray-100 h-24 w-24 mx-auto mb-2 relative overflow-hidden">
                 <div className="pixel-character"></div>
               </div>
-              <p className="text-center font-comic text-xs text-gray-700">
+              <p className="text-center text-xs text-gray-700">
                 Please login
               </p>
             </div>
             <div className="bg-white p-2 rounded border border-gray-200">
-              <h3 className="font-bubbly text-xs text-center mb-1">STATUS</h3>
+              <h3 className="text-xs text-center mb-1">STATUS</h3>
               <div className="flex justify-center space-x-1 text-xs">
                 <span className="bg-green-100 px-1 rounded-sm">💖 0</span>
                 <span className="bg-blue-100 px-1 rounded-sm">🌟 0</span>
@@ -104,10 +104,10 @@ export default function LoginPage() {
           {/* Middle & Right Columns - Main Content */}
           <div className="md:col-span-3">
             <div className="bg-white rounded border border-gray-200 p-5 mb-4">
-              <h1 className="text-2xl font-rounded font-bold text-center text-blue-600 mb-4 border-b border-gray-200 pb-2">
+              <h1 className="text-2xl font-bold text-center text-blue-600 mb-4 border-b border-gray-200 pb-2">
                 HomeSpace
               </h1>
-              <p className="text-center text-sm font-comic mb-6 text-gray-700">
+              <p className="text-center text-sm mb-6 text-gray-700">
                 Sign in with your account to enter your mini-homepage!
               </p>
 
@@ -131,7 +131,7 @@ export default function LoginPage() {
                 </div>
                 <button
                   onClick={() => navigate("/home")}
-                  className="w-full py-2 bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bubbly rounded-full border-2 border-b-4 border-r-4 border-yellow-600 transition duration-200 text-sm"
+                  className="w-full py-2 bg-yellow-400 hover:bg-yellow-500 text-gray-900 rounded-full border-2 border-b-4 border-r-4 border-yellow-600 transition duration-200 text-sm"
                 >
                   Continue as Guest
                 </button>
@@ -139,7 +139,7 @@ export default function LoginPage() {
             </div>
 
             {/* Footer Section */}
-            <div className="flex justify-between items-center text-xs font-comic text-gray-500">
+            <div className="flex justify-between items-center text-xs text-gray-500">
               <span>Made with love by Alex, Suyog, Josh, Eric</span>
             </div>
           </div>

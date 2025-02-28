@@ -51,11 +51,11 @@ const handleFriendClick = (friend: Friend) => {
 
 const FriendList = ({ friends }: { friends: Friend[] }) => {
   return (
-    <div className="w-[250px] h-[800px] bg-white rounded-2xl shadow-lg p-5">
+    <div className="w-[250px] h-[800px] rounded-2xl shadow-lg p-5">
       <h2 className="text-lg font-semibold pb-5">Friends</h2>
       <div className="w-full h-[700px] border-2 border-solid rounded-xl overflow-y-auto p-4 space-y-4 scrollbar-hide">
         {friends.map((friend) => (
-          <div key={friend.id} onClick={() => handleFriendClick(friend)} className="w-full h-[100px] bg-sky-100 rounded-lg shadow-md p-4 flex items-center space-x-4 transition-all duration-300 hover:scale-105 cursor-pointer hover:bg-sky-200">
+          <div key={friend.id} onClick={() => handleFriendClick(friend)} className="w-full h-[100px] rounded-lg shadow-md p-4 flex items-center space-x-4 transition-all duration-300 hover:scale-105 cursor-pointer hover:bg-sky-200">
             <img src={friend.profilePic} alt={friend.name} className="w-20 h-20 rounded-full object-cover" />
             <h2 className="text-lg font-semibold">{friend.name}</h2>
           </div>
