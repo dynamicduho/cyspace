@@ -8,28 +8,31 @@ import {
     getTokens,
     useOkto,
   } from "@okto_web3/react-sdk";
-  import { googleLogout } from "@react-oauth/google";
-  import { useNavigate } from "react-router-dom";
-  import GetButton from "./GetButton";
+import { googleLogout } from "@react-oauth/google";
+import { useNavigate } from "react-router-dom";
+import GetButton from "./GetButton";
+import Cookies from "universal-cookie";
    
 export default function OktoIntents() {
-const oktoClient = useOkto();
-const navigate = useNavigate();
-const isloggedIn = oktoClient.isLoggedIn();
-const userSWA = oktoClient.userSWA;
+    const oktoClient = useOkto();
+    const navigate = useNavigate();
+    const isloggedIn = oktoClient.isLoggedIn();
+    const userSWA = oktoClient.userSWA;
+    const cookies = new Cookies();
 
-// handles user logout process
+    // handles user logout process
     async function handleLogout() {
         try {
         // Perform Google OAuth logout and remove stored token
-        googleLogout();
-        localStorage.removeItem("googleIdToken");
-        oktoClient.sessionClear();
-        navigate("/");
-        return { result: "logout success" };
+            cookies.remove('auth_session');
+            googleLogout();
+            localStorage.removeItem("googleIdToken");
+            oktoClient.sessionClear();
+            navigate("/");
+            return { result: "logout success" };
         } catch (error) {
-        console.error("Logout failed:", error);
-        return { result: "logout failed" };
+            console.error("Logout failed:", error);
+            return { result: "logout failed" };
         }
     }
 

@@ -3,11 +3,13 @@ import { useOkto } from "@okto_web3/react-sdk";
 import { GoogleLogin } from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
 import LoadingScreen from "./components/LoadingScreen";
+import Cookies from "universal-cookie";
 
 export default function LoginPage() {
   const oktoClient = useOkto();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const cookies = new Cookies();
 
   // Authenticate with Okto using the provided Google ID token.
   const authenticateWithOkto = async (idToken: string) => {
@@ -18,10 +20,22 @@ export default function LoginPage() {
         provider: "google",
       });
       console.log("Authenticated with Okto:", user);
+      cookies.set('auth_session', {
+               token: idToken,
+               userId: user,
+               isLoggedIn: true
+             }, { 
+               path: '/',
+               maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
+               secure: process.env.NODE_ENV === 'production',
+               sameSite: 'strict'
+             });
+      console.log('setting cookies')
       navigate("/home");
     } catch (error) {
       console.error("Authentication failed:", error);
       localStorage.removeItem("googleIdToken");
+      cookies.remove('auth_session');
     } finally {
       setIsLoading(false);
     }
