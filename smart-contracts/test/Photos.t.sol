@@ -23,12 +23,17 @@ contract CySpaceNetworkPhotoTest is Test {
 
     function testCreatePhoto() public {
         string memory caption = "This is a valid caption for my photo.";
+        // Create a sample keys array
+        string[] memory keys = new string[](2);
+        keys[0] = "key1";
+        keys[1] = "key2";
 
+        // Expect the PhotoCreated event to be emitted.
         vm.expectEmit(true, false, false, true);
         emit PhotoCreated(alice, caption, block.timestamp);
 
         vm.prank(alice);
-        cySpace.createPhoto(caption, photoAlbum);
+        cySpace.createPhoto(caption, photoAlbum, keys);
 
         (
             address storedAuthor,
@@ -44,13 +49,12 @@ contract CySpaceNetworkPhotoTest is Test {
     }
 
     function testCreatePhotoCaptionTooLong() public {
-        string
-            memory longCaption = "This caption is intentionally made extremely long to trigger the CaptionTooLong error in the contract. It definitely exceeds one hundred and forty characters.";
-
+        string memory longCaption = "This caption is intentionally made extremely long to trigger the CaptionTooLong error in the contract. It definitely exceeds one hundred and forty characters.";
+        // Provide an empty keys array for this test.
+        string[] memory emptyKeys = new string[](0);
+        
         vm.prank(alice);
-        vm.expectRevert(
-            abi.encodeWithSelector(CySpaceNetwork.CaptionTooLong.selector)
-        );
-        cySpace.createPhoto(longCaption, photoAlbum);
+        vm.expectRevert(abi.encodeWithSelector(CySpaceNetwork.CaptionTooLong.selector));
+        cySpace.createPhoto(longCaption, photoAlbum, emptyKeys);
     }
 }
