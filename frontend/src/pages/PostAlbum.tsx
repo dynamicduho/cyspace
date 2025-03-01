@@ -147,110 +147,152 @@ const PostAlbum = () => {
   }, [oktoClient]);
 
   return (
-    <div style={{ maxWidth: '600px', margin: '2rem auto', padding: '1rem', border: '1px solid #ccc' }}>
-      <h1>Upload Album</h1>
-      <div style={{ marginBottom: '1rem' }}>
-        <label>Caption:</label>
-        <input
-          type="text"
-          value={caption}
-          onChange={handleCaptionChange}
-          placeholder="Enter album caption (max 140 characters)"
-          style={{ width: '100%', padding: '0.5rem', marginTop: '0.5rem' }}
-          maxLength={140}
-        />
-        <small>{caption.length}/140 characters</small>
-      </div>
-      <div style={{ marginBottom: '1rem' }}>
-        <label>Images:</label>
-        <input type="file" multiple onChange={handleFileChange} style={{ display: 'block', marginTop: '0.5rem' }} />
-      </div>
-      <button 
-        onClick={handleUpload} 
-        disabled={uploading}
-        style={{ marginRight: '1rem' }}
-      >
-        {uploading ? 'Uploading...' : 'Upload Album'}
-      </button>
-      
-      {/* Post button appears after successful upload */}
-      {uploadResult && !txResult && (
-        <button 
-          onClick={handlePost} 
-          disabled={posting}
-          style={{ 
-            backgroundColor: '#4CAF50', 
-            color: 'white',
-            border: 'none',
-            padding: '0.5rem 1rem',
-            borderRadius: '4px',
-            cursor: posting ? 'not-allowed' : 'pointer'
-          }}
-        >
-          {posting ? 'Posting to Blockchain...' : 'Post to CySpace'}
-        </button>
-      )}
-      
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      
-      {uploadResult && !txResult && (
-        <div style={{ marginTop: '2rem' }}>
-          <h2>Upload Successful!</h2>
-          <p>
-            <strong>FlatDirectory Address:</strong> {uploadResult.flatDirectoryAddress}
-          </p>
-          <p>
-            <strong>File Keys:</strong>
-          </p>
-          <ul>
-            {uploadResult.keys.map((key, index) => (
-              <li key={index}>{key}</li>
-            ))}
-          </ul>
-          <p style={{ marginTop: '1rem', fontStyle: 'italic' }}>
-            Click "Post to CySpace" to save your album to the blockchain.
-          </p>
+    <main className="min-h-screen flex items-center justify-center bg-cyworld-pink">
+      <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-2xl mx-4 cyworld-notebook">
+        {/* Top Navigation Bar */}
+        <div className="flex justify-between items-center mb-3 px-2 py-1 bg-gray-100 rounded-t-md border-b border-gray-300">
+          <div className="flex space-x-1">
+            <div className="w-3 h-3 rounded-full bg-red-400"></div>
+            <div className="w-3 h-3 rounded-full bg-yellow-400"></div>
+            <div className="w-3 h-3 rounded-full bg-green-400"></div>
+          </div>
+          <div className="flex items-center text-xs text-gray-500">
+            <span>TODAY</span>
+            <span className="mx-1 text-yellow-500">{new Date().toLocaleDateString()}</span>
+          </div>
         </div>
-      )}
-      
-      {txResult && (
-        <div style={{ 
-          marginTop: '2rem', 
-          padding: '1rem', 
-          backgroundColor: txResult.status === 'success' ? '#e8f5e9' : '#ffebee',
-          borderRadius: '4px'
-        }}>
-          <h2>{txResult.status === 'success' ? '🎉 Posted Successfully!' : '❌ Posting Failed'}</h2>
-          <p>{txResult.message}</p>
-          {txResult.jobId && (
-            <p>
-              <strong>Transaction Job ID:</strong> {txResult.jobId}
-            </p>
-          )}
-          {txResult.status === 'success' && (
-            <button 
-              onClick={() => {
-                setCaption('');
-                setFiles([]);
-                setUploadResult(null);
-                setTxResult(null);
-              }}
-              style={{ 
-                marginTop: '1rem',
-                backgroundColor: '#2196F3',
-                color: 'white',
-                border: 'none',
-                padding: '0.5rem 1rem',
-                borderRadius: '4px',
-                cursor: 'pointer'
-              }}
-            >
-              Create New Album
-            </button>
-          )}
+
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {/* Left Column - Preview Area */}
+          <div className="border-r border-gray-200 pr-4 md:col-span-1">
+            <div className="bg-white p-2 rounded mb-3 border border-gray-200">
+              <h2 className="text-center text-blue-500 mb-2 border-b border-gray-200 pb-1 text-lg">Preview</h2>
+              <div className="pixel-avatar bg-gray-100 h-24 w-24 mx-auto mb-2 relative overflow-hidden">
+                {files.length > 0 && (
+                  <img 
+                    src={URL.createObjectURL(files[0])} 
+                    alt="Preview" 
+                    className="w-full h-full object-cover"
+                  />
+                )}
+              </div>
+              <p className="text-center text-xs text-gray-700">
+                {caption || "Add a caption"}
+              </p>
+            </div>
+          </div>
+
+          {/* Right Column - Upload Form */}
+          <div className="md:col-span-3">
+            <div className="bg-white rounded border border-gray-200 p-5 mb-4">
+              <h1 className="text-2xl font-bold text-center text-blue-600 mb-4 border-b border-gray-200 pb-2">
+                Upload Album
+              </h1>
+
+              <div className="space-y-6">
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">Caption:</label>
+                  <input
+                    type="text"
+                    value={caption}
+                    onChange={handleCaptionChange}
+                    placeholder="Enter album caption (max 140 characters)"
+                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    maxLength={140}
+                  />
+                  <small className="text-gray-500">{caption.length}/140 characters</small>
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-medium text-gray-700">Images:</label>
+                  <input 
+                    type="file" 
+                    multiple 
+                    onChange={handleFileChange}
+                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+
+                <div className="flex gap-2">
+                  <button 
+                    onClick={handleUpload} 
+                    disabled={uploading}
+                    className="flex-1 py-2 bg-yellow-400 hover:bg-yellow-500 text-gray-900 rounded-full border-2 border-b-4 border-r-4 border-yellow-600 transition duration-200 text-sm disabled:opacity-50"
+                  >
+                    {uploading ? 'Uploading...' : 'Upload Album'}
+                  </button>
+
+                  {uploadResult && !txResult && (
+                    <button 
+                      onClick={handlePost} 
+                      disabled={posting}
+                      className="flex-1 py-2 bg-green-400 hover:bg-green-500 text-white rounded-full border-2 border-b-4 border-r-4 border-green-600 transition duration-200 text-sm disabled:opacity-50"
+                    >
+                      {posting ? 'Posting to Blockchain...' : 'Post to CySpace'}
+                    </button>
+                  )}
+                </div>
+
+                {error && (
+                  <p className="text-red-500 text-sm text-center">{error}</p>
+                )}
+
+                {uploadResult && !txResult && (
+                  <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <h2 className="text-lg font-semibold text-blue-600 mb-2">Upload Successful!</h2>
+                    <p className="text-sm text-gray-700">
+                      <strong>FlatDirectory Address:</strong> {uploadResult.flatDirectoryAddress}
+                    </p>
+                    <p className="text-sm text-gray-700 mt-2">
+                      <strong>File Keys:</strong>
+                    </p>
+                    <ul className="list-disc list-inside text-sm text-gray-600">
+                      {uploadResult.keys.map((key, index) => (
+                        <li key={index}>{key}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {txResult && (
+                  <div className={`mt-4 p-4 rounded-lg border ${
+                    txResult.status === 'success' ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'
+                  }`}>
+                    <h2 className="text-lg font-semibold mb-2">
+                      {txResult.status === 'success' ? '🎉 Posted Successfully!' : '❌ Posting Failed'}
+                    </h2>
+                    <p className="text-sm text-gray-700">{txResult.message}</p>
+                    {txResult.jobId && (
+                      <p className="text-sm text-gray-700 mt-2">
+                        <strong>Transaction Job ID:</strong> {txResult.jobId}
+                      </p>
+                    )}
+                    {txResult.status === 'success' && (
+                      <button 
+                        onClick={() => {
+                          setCaption('');
+                          setFiles([]);
+                          setUploadResult(null);
+                          setTxResult(null);
+                        }}
+                        className="mt-4 w-full py-2 bg-blue-400 hover:bg-blue-500 text-white rounded-full border-2 border-b-4 border-r-4 border-blue-600 transition duration-200 text-sm"
+                      >
+                        Create New Album
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Footer Section */}
+            <div className="flex justify-between items-center text-xs text-gray-500">
+              <span>Made with love by Alex, Suyog, Josh, Eric</span>
+            </div>
+          </div>
         </div>
-      )}
-    </div>
+      </div>
+    </main>
   );
 };
 

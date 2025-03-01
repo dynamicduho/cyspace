@@ -4,6 +4,7 @@ import { GoogleLogin } from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
 import LoadingScreen from "./components/LoadingScreen";
 import Cookies from "universal-cookie";
+import { supabase } from "./components/supabaseClient";
 
 export default function LoginPage() {
   const oktoClient = useOkto();
@@ -21,17 +22,30 @@ export default function LoginPage() {
       });
       console.log("Authenticated with Okto:", user);
       cookies.set('auth_session', {
-               token: idToken,
-               userId: user,
-               isLoggedIn: true
-             }, { 
-               path: '/',
-               maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
-               secure: process.env.NODE_ENV === 'production',
-               sameSite: 'strict'
-             });
-      console.log('setting cookies')
-      navigate("/home");
+        token: idToken,
+        userId: user,
+        isLoggedIn: true
+      }, { 
+        path: '/',
+        maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict'
+      });
+      console.log('setting cookies');
+      
+      // Check if user exists in Supabase
+      const { data: existingUser } = await supabase
+        .from('users')
+        .select()
+        .eq('wallet_address', user)
+        .single();
+
+      // Navigate based on whether user exists
+      if (existingUser) {
+        navigate("/home");
+      } else {
+        navigate("/bio");
+      }
     } catch (error) {
       console.error("Authentication failed:", error);
       localStorage.removeItem("googleIdToken");
@@ -48,7 +62,7 @@ export default function LoginPage() {
       try {
         if (oktoClient.isLoggedIn()) {
           console.log("User already logged in");
-          navigate("/home");
+          navigate("/bio");
         } else {
           const storedToken = localStorage.getItem("googleIdToken");
           if (storedToken) {
@@ -144,7 +158,7 @@ export default function LoginPage() {
                   />
                 </div>
                 <button
-                  onClick={() => navigate("/home")}
+                  onClick={() => navigate("/bio")}
                   className="w-full py-2 bg-yellow-400 hover:bg-yellow-500 text-gray-900 rounded-full border-2 border-b-4 border-r-4 border-yellow-600 transition duration-200 text-sm"
                 >
                   Continue as Guest

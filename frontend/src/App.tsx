@@ -9,6 +9,7 @@ import TransferNFT from "./pages/TransferNFT";
 import TransferTokens from "./pages/TransferTokens";
 import ProfilePage from "./components/ProfilePage";
 import PostAlbum from "./pages/PostAlbum";
+import BioPage from "./components/BioPage";
 function App() {
   const oktoClient = useOkto();
 
@@ -21,6 +22,7 @@ function App() {
     <>
       <Routes>
         <Route path="/" element={<LoginPage />} />
+        <Route path="/bio" element={<BioPage />} />
         <Route path="/home" element={<Homepage />} />
         <Route path="/u/:username" element={<ProfilePage />} />
 

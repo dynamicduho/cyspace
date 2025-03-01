@@ -2,6 +2,25 @@ import React, { useState } from 'react';
 import OktoIntents from './OktoIntents';
 import { useOkto } from "@okto_web3/react-sdk";
 import { useNavigate } from 'react-router-dom';
+import RetroClock from './RetroClock';
+
+// Add this keyframe animation
+const styles = `
+  @keyframes modalPop {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .animate-modal {
+    animation: modalPop 0.3s ease-out forwards;
+  }
+`;
 
 interface Friend {
   id: number;
@@ -30,7 +49,7 @@ const SocialMedia = () => {
     const navigate = useNavigate();
 
     const handleFriendClick = (friend: Friend) => {
-      window?.open?.('http://localhost:9999/', '_blank').focus();
+      window?.open?.('http://localhost:9999/u/suyog', '_blank').focus();
         // navigate(`http://localhost:9999/`, {
         //    
         // });
@@ -41,9 +60,25 @@ const SocialMedia = () => {
     const filteredFriends = friends.filter(friend =>
       friend.name.toLowerCase().includes(query.toLowerCase()));
 
+  // Add state for modal
+  const [selectedStory, setSelectedStory] = useState<{ name: string; color: string } | null>(null);
+
   return (
     
     <div className="bg-amber-50 min-h-screen flex justify-center bg-cyworld-pink">
+      {/* Modal */}
+      {selectedStory && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-opacity duration-300 ease-in-out"
+          onClick={() => setSelectedStory(null)}
+        >
+          <div className="w-80 h-96 rounded-2xl overflow-hidden flex flex-col transform transition-transform duration-300 ease-in-out animate-modal">
+            <div className={`flex-1 ${selectedStory.color}`}></div>
+            <div className="bg-white p-4 text-center font-semibold">{selectedStory.name}</div>
+          </div>
+        </div>
+      )}
+
       <div className="w-full border-2 border-gray-800 rounded-lg overflow-hidden">
         {/* Top navigation bar */}
         <div className="bg-cyworld-blue p-4 flex items-center justify-between border-b-2 border-gray-800">
@@ -131,7 +166,11 @@ const SocialMedia = () => {
                     </div>
                     
                     {stories.map(story => !story.isYourStory && (
-                      <div key={story.id} className="flex flex-col items-center">
+                      <div 
+                        key={story.id} 
+                        className="flex flex-col items-center"
+                        onClick={() => setSelectedStory(story)}
+                      >
                         <div className="w-20 h-20 border-4 border-red-400 rounded-full flex items-center justify-center">
                           <div className={`w-16 h-16 ${story.color} rounded-full`}></div>
                         </div>
@@ -152,6 +191,19 @@ const SocialMedia = () => {
                 
               </div>
               <div className="lg:w-[500px] overflow-y-auto max-h-[700px]">
+                  <div><RetroClock /></div>
+                  <button 
+                    onClick={() => navigate('/post/album')}
+                    className="w-full bg-cyworld-blue text-white py-3 px-6 rounded-lg text-lg font-bold border-2 border-gray-800 hover:bg-blue-700 transition-colors duration-200 mt-10"
+                  >
+                    Post Picture
+                  </button>
+                  <button 
+                    onClick={() => navigate('/post/diary')}
+                    className="w-full bg-cyworld-blue text-white py-3 px-6 rounded-lg text-lg font-bold border-2 border-gray-800 hover:bg-blue-700 transition-colors duration-200 mb-4 mt-5"
+                  >
+                    Post Diary
+                  </button>
                   <OktoIntents />
               </div>
             </div>
