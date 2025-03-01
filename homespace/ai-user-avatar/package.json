@@ -22,7 +22,6 @@
     "dotenv": "^16.4.5",
     "zod": "^3.22.4",
     "axios": "^1.6.7",
-    "@types/axios": "^0.14.0",
     "ethers": "^6.7.1"
   },
   "devDependencies": {

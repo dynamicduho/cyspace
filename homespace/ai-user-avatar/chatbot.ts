@@ -17,7 +17,7 @@ import * as dotenv from "dotenv";
 import * as fs from "fs";
 import * as readline from "readline";
 // Import character functionality
-import { eric, createCharacterMessageModifier } from "./characters";
+import { eric, suyog, loadCharacter, createCharacterMessageModifier, Character } from "./characters";
 import { CharacterQuizManager } from "./custom_actions/quizUser";
 import NFTMinter from "./custom_actions/mintNFT";
 
@@ -64,9 +64,10 @@ const WALLET_DATA_FILE = "wallet_data.txt";
 /**
  * Initialize the agent with CDP Agentkit
  *
+ * @param character - The character to use for the agent
  * @returns Agent executor and config
  */
-async function initializeAgent() {
+async function initializeAgent(character: Character) {
   try {
     // Initialize LLM
     const llm = new ChatOpenAI({
@@ -118,21 +119,21 @@ async function initializeAgent() {
 
     // Store buffered conversation history in memory
     const memory = new MemorySaver();
-    const agentConfig = { configurable: { thread_id: `${eric.name} CDP AgentKit Chatbot` } };
+    const agentConfig = { configurable: { thread_id: `${character.name} CDP AgentKit Chatbot` } };
 
-    // Create React Agent using the LLM and CDP AgentKit tools with Eric's character
+    // Create React Agent using the LLM and CDP AgentKit tools with the selected character
     const agent = createReactAgent({
       llm,
       tools,
       checkpointSaver: memory,
-      messageModifier: createCharacterMessageModifier(eric),
+      messageModifier: createCharacterMessageModifier(character),
     });
 
     // Save wallet data
     const exportedWallet = await walletProvider.exportWallet();
     fs.writeFileSync(WALLET_DATA_FILE, JSON.stringify(exportedWallet));
 
-    return { agent, config: agentConfig };
+    return { agent, config: agentConfig, walletProvider };
   } catch (error) {
     console.error("Failed to initialize agent:", error);
     throw error; // Re-throw to be handled by caller
@@ -199,7 +200,7 @@ async function runChatMode(agent: any, config: any) {
   try {
     // eslint-disable-next-line no-constant-condition
     while (true) {
-      const userInput = await question("\nPrompt: ");
+      const userInput = await question("User: ");
 
       if (userInput.toLowerCase() === "exit") {
         break;
@@ -231,8 +232,16 @@ async function runChatMode(agent: any, config: any) {
  * and minting an NFT based on their score
  * 
  * @param walletProvider - CDP wallet provider for minting NFTs
+ * @param agent - The agent executor
+ * @param config - Agent configuration
+ * @param character - The character being used
  */
-async function runQuizMode(walletProvider: CdpWalletProvider) {
+async function runQuizMode(
+  walletProvider: CdpWalletProvider, 
+  agent: any, 
+  config: any,
+  character: Character
+) {
   console.log("Starting quiz mode...");
 
   const rl = readline.createInterface({
@@ -244,8 +253,8 @@ async function runQuizMode(walletProvider: CdpWalletProvider) {
     new Promise(resolve => rl.question(prompt, resolve));
 
   try {
-    // Create quiz manager with Eric character and wallet provider
-    const quizManager = new CharacterQuizManager(eric, walletProvider);
+    // Create quiz manager with selected character and wallet provider
+    const quizManager = new CharacterQuizManager(character, walletProvider);
     
     // Display welcome message
     console.log(`I'm ${quizManager.getCharacterName()}'s avatar, and I'm ready to test your knowledge about me.`);
@@ -253,22 +262,7 @@ async function runQuizMode(walletProvider: CdpWalletProvider) {
     console.log("-----------------------------------------------------------");
     
     // Ask for wallet address
-    let walletAddress = "";
-    while (!walletAddress) {
-      const input = await question("Please enter your Ethereum wallet address to receive an NFT if you score well (or type 'skip' to proceed without NFT rewards): ");
-      
-      if (input.toLowerCase() === 'skip') {
-        console.log("Proceeding without NFT rewards.");
-        break;
-      } else if (quizManager.setWalletAddress(input)) {
-        walletAddress = input;
-        console.log(`Wallet address set: ${input}`);
-        console.log("You'll receive an NFT if you score 60% or higher!");
-      } else {
-        console.log("Invalid Ethereum address format. Please try again or type 'skip'.");
-      }
-    }
-    
+    const walletAddress = "0xE9473eCDCf10162b2E25ca20acb87906354A649a"; // set to suyog's wallet address for now
     // Start the quiz
     console.log(quizManager.start());
     let currentQuestion = quizManager.getNextQuestion();
@@ -293,27 +287,93 @@ async function runQuizMode(walletProvider: CdpWalletProvider) {
       }
     }
     
-    console.log("\nThank you for taking the quiz! Goodbye!");
-    setTimeout(() => {
-      rl.close();
-      process.exit(0);
-    }, 1500);
-    
+    console.log("\nThank you for taking the quiz! Here's your NFT:");
+
+    try {
+      const thought =
+        "Mint an NFT for the user with the following metadata: " +
+        "Transfer the NFT to the user's wallet address: " + walletAddress;
+
+      const stream = await agent.stream({ messages: [new HumanMessage(thought)] }, config);
+
+      for await (const chunk of stream) {
+        if ("agent" in chunk) {
+          console.log(chunk.agent.messages[0].content);
+        } else if ("tools" in chunk) {
+          console.log(chunk.tools.messages[0].content);
+        }
+        console.log("-------------------");
+      }
+
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error("Error:", error.message);
+      }
+      process.exit(1);
+    }
   } catch (error) {
     if (error instanceof Error) {
       console.error("Error:", error.message);
     }
-    rl.close();
     process.exit(1);
+  } finally {
+    rl.close();
   }
 }
 
+// /**
+//  * Choose a character to use for the agent
+//  *
+//  * @returns Selected character
+//  */
+// async function chooseCharacter(): Promise<Character> {
+//   const rl = readline.createInterface({
+//     input: process.stdin,
+//     output: process.stdout,
+//   });
+
+//   const question = (prompt: string): Promise<string> =>
+//     new Promise(resolve => rl.question(prompt, resolve));
+
+//   // eslint-disable-next-line no-constant-condition
+//   while (true) {
+//     console.log("\nAvailable characters:");
+//     console.log("1. Eric    - University student passionate about tech and blockchain");
+//     console.log("2. Suyog   - Math and physics graduate with diverse interests");
+//     console.log("3. Custom  - Load a custom character by name");
+
+//     const choice = (await question("\nChoose a character (enter number or name): "))
+//       .toLowerCase()
+//       .trim();
+
+//     if (choice === "1" || choice === "eric") {
+//       rl.close();
+//       return eric;
+//     } else if (choice === "2" || choice === "suyog") {
+//       rl.close();
+//       return suyog;
+//     } else if (choice === "3" || choice === "custom") {
+//       const customName = await question("Enter the name of your custom character: ");
+//       try {
+//         const customCharacter = loadCharacter(customName);
+//         rl.close();
+//         return customCharacter;
+//       } catch (error) {
+//         console.log(`Character "${customName}" not found. Please try again.`);
+//         continue;
+//       }
+//     }
+//     console.log("Invalid choice. Please try again.");
+//   }
+// }
+
 /**
- * Choose whether to run in autonomous, chat, or quiz mode based on user input
+ * Choose whether to run in chat or quiz mode based on user input
  *
  * @returns Selected mode
  */
-async function chooseMode(): Promise<"chat" | "auto" | "quiz"> {
+async function chooseMode(): Promise<"chat" | "quiz"> {
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
@@ -326,8 +386,7 @@ async function chooseMode(): Promise<"chat" | "auto" | "quiz"> {
   while (true) {
     console.log("\nAvailable modes:");
     console.log("1. chat    - Interactive chat mode");
-    console.log("2. auto    - Autonomous action mode");
-    console.log("3. quiz    - Take a quiz about the character and earn an NFT");
+    console.log("2. quiz    - Take a quiz about the character and earn an NFT");
 
     const choice = (await question("\nChoose a mode (enter number or name): "))
       .toLowerCase()
@@ -336,10 +395,7 @@ async function chooseMode(): Promise<"chat" | "auto" | "quiz"> {
     if (choice === "1" || choice === "chat") {
       rl.close();
       return "chat";
-    } else if (choice === "2" || choice === "auto") {
-      rl.close();
-      return "auto";
-    } else if (choice === "3" || choice === "quiz") {
+    } else if (choice === "2" || choice === "quiz") {
       rl.close();
       return "quiz";
     }
@@ -352,23 +408,18 @@ async function chooseMode(): Promise<"chat" | "auto" | "quiz"> {
  */
 async function main() {
   try {
-    const { agent, config } = await initializeAgent();
+    // First, choose a character
+    const character = eric;
+    console.log(`Selected character: ${character.name}`);
+    
+    // Initialize agent with the selected character
+    const { agent, config, walletProvider } = await initializeAgent(character);
     const mode = await chooseMode();
 
     if (mode === "chat") {
       await runChatMode(agent, config);
-    } else if (mode === "auto") {
-      await runAutonomousMode(agent, config);
     } else if (mode === "quiz") {
-      // Configure CDP Wallet Provider for NFT minting
-      const walletConfig = {
-        apiKeyName: process.env.CDP_API_KEY_NAME,
-        apiKeyPrivateKey: process.env.CDP_API_KEY_PRIVATE_KEY,
-        networkId: process.env.NETWORK_ID || "base-sepolia",
-      };
-      
-      const walletProvider = await CdpWalletProvider.configureWithWallet(walletConfig);
-      await runQuizMode(walletProvider);
+      await runQuizMode(walletProvider, agent, config, character);
     }
   } catch (error) {
     if (error instanceof Error) {
