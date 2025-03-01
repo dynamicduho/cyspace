@@ -11,6 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@apollo/client": "^3.13.1",
     "@daniel-szulc/react-weather-widget": "^1.1.1",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
@@ -23,6 +24,7 @@
     "ethers": "^6.13.5",
     "ethstorage-sdk": "^3.0.0",
     "framer-motion": "^12.4.7",
+    "graphql": "^16.10.0",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.476.0",
     "react": "^18.3.1",

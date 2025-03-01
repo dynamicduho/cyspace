@@ -3,6 +3,9 @@ import OktoIntents from './OktoIntents';
 import { useOkto } from "@okto_web3/react-sdk";
 import { useNavigate } from 'react-router-dom';
 import RetroClock from './RetroClock';
+import { useQuery } from '@apollo/client';
+import { GET_ALL_PHOTO_ALBUMS } from '../query/photoalbums';
+import PhotosList from './PhotosList';
 
 interface Friend {
   id: number;
@@ -11,6 +14,10 @@ interface Friend {
 }
 
 const SocialMedia = () => {
+  const { loading, error, data: photoalbums } = useQuery(GET_ALL_PHOTO_ALBUMS);
+
+  console.log("photoalbums", photoalbums);
+
   // Sample data for friends
   const friends = [
     { id: 1, name: 'Suyog Joshi', online: true, color: 'bg-teal-300' },
@@ -162,15 +169,7 @@ const SocialMedia = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                  {[...Array(6)].map((_, index) => (
-                    <div key={index} className="bg-cyworld-blue border-2 border-gray-800 shadow-2xl rounded-2xl p-4 w-full h-80 flex flex-col items-center">
-                      <h2 className="text-lg font-semibold">Josh</h2>
-                      <p className="text-gray-600 mt-24 text-center">Updated his poker earnings</p>
-                    </div>
-                  ))}
-                </div>
-                
+                {photoalbums?.photoAlbums && <PhotosList photoalbums={photoalbums.photoAlbums} />}
               </div>
               <div className="lg:w-[500px] overflow-y-auto max-h-[700px]">
                   <div><RetroClock /></div>
