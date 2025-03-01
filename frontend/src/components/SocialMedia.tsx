@@ -10,6 +10,7 @@ import GetButton from './GetButton';
 import { googleLogout } from "@react-oauth/google";
 import Cookies from "universal-cookie";
 import { supabase } from './supabaseClient';
+import { GET_ALL_DIARY_ENTRY } from '../query/diary';
 import { getWalletOrUsername } from '../helper';
 
 interface Friend {
@@ -20,11 +21,15 @@ interface Friend {
 
 const SocialMedia = () => {
   const { loading, error, data: photoalbums } = useQuery(GET_ALL_PHOTO_ALBUMS);
+  const { loading: diaryLoading, error: diaryError, data: diaryEntries } = useQuery(GET_ALL_DIARY_ENTRY);
+
   const [username, setUsername] = useState('');
   const oktoClient = useOkto();
   const userSWA = oktoClient.userSWA;
   const navigate = useNavigate();
   const cookies = new Cookies();
+
+  console.log(diaryEntries);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -60,25 +65,23 @@ const SocialMedia = () => {
     { id: 1, name: 'Eric', color: 'bg-orange-300' },
     { id: 2, name: 'Alex', color: 'bg-teal-300' },
     { id: 3, name: 'Suyog', color: 'bg-teal-700' },
-    { id: 4, name: 'Joshua', color: 'bg-pink-100'},
+    { id: 4, name: 'Joshua', color: 'bg-pink-100' },
   ];
 
   const handleFriendClick = (friend: Friend) => {
     window?.open?.(`http://localhost:9999/u/${friend.username}`, '_blank').focus();
-    // navigate(`http://localhost:9999/`, {
-    //    
-    // });
   };
+
   const [query, setQuery] = useState("");
 
   // Filter friends based on search query
   const filteredFriends = friends.filter(friend =>
     friend.name.toLowerCase().includes(query.toLowerCase()));
 
-  // Add state for modal
+  // State for modal
   const [selectedStory, setSelectedStory] = useState<{ name: string; color: string } | null>(null);
 
-  // Add logout handler
+  // Logout handler
   async function handleLogout() {
     try {
       cookies.remove('auth_session');
@@ -93,12 +96,14 @@ const SocialMedia = () => {
     }
   }
 
+  // State for tab navigation: "posts" or "diary"
+  const [activeTab, setActiveTab] = useState("posts");
+
   return (
-    
     <div className="bg-amber-50 min-h-screen flex justify-center bg-cyspace-pink">
       {/* Modal */}
       {selectedStory && (
-        <div 
+        <div
           className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
           onClick={() => setSelectedStory(null)}
         >
@@ -113,11 +118,11 @@ const SocialMedia = () => {
         {/* Top navigation bar */}
         <div className="bg-cyspace-blue p-4 flex items-center justify-between border-b-2 border-gray-800">
           <div className="text-white text-3xl font-bold">CySpace</div>
-          
+
           <div className="bg-white rounded-full w-full max-w-md mx-4 px-4 py-2 flex items-center relative">
-            <input 
-              type="text" 
-              placeholder="Search..." 
+            <input
+              type="text"
+              placeholder="Search..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               className="w-full bg-transparent outline-none text-gray-700"
@@ -144,17 +149,17 @@ const SocialMedia = () => {
               </div>
             )}
           </div>
-          
+
           <div className="flex space-x-2">
             <div>{userSWA?.slice(0, 6)}...{userSWA?.slice(-6)}</div>
           </div>
         </div>
-        
+
         <div className="flex h-full">
           {/* Left sidebar - Friends */}
           <div className="w-80 border-r-2 border-gray-800 p-4">
             <h2 className="text-2xl mb-6 font-bold text-gray-800">Friends</h2>
-            
+
             <div className="space-y-6">
               {friends.map(friend => (
                 <div key={friend.id} onClick={() => handleFriendClick(friend)} className="flex items-center justify-between hover:scale-105 cursor-pointer hover:bg-sky-200">
@@ -168,76 +173,101 @@ const SocialMedia = () => {
                 </div>
               ))}
             </div>
-            
-            {/* <button className="mt-8 bg-red-400 text-white py-3 px-6 w-full rounded-full text-lg font-bold border-2 border-gray-700">
-              Find Friends
-            </button> */}
           </div>
-          
+
           {/* Main content area */}
           <div className="flex-1 p-4">
             {/* Stories section */}
-            
-            
-
-            <div className="flex flex-col lg:flex-row justify-between gap-6">
-              <div className='flex flex-col flex-1'>
-                
-                <div className="bg-[#E0CCFF] rounded-lg border-2 border-gray-800 p-4 mb-4">
-                  <div className="flex space-x-16 justify-center">
-                    {/* Your Story with plus sign */}
-                    {/* <div className="flex flex-col items-center">
-                      <div className="relative w-20 h-20 border-4 border-red-400 rounded-full flex items-center justify-center">
-                        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
-                          <span className="text-red-400 text-3xl font-bold">+</span>
-                        </div>
-                      </div>
-                      <span className="mt-2 text-center">Your Story</span>
-                    </div> */}
-                    
-                    {stories.map(story => !story.isYourStory && (
-                      <div 
-                        key={story.id} 
-                        className="flex flex-col items-center"
-                        onClick={() => setSelectedStory(story)}
-                      >
-                        <div className="w-20 h-20 border-4 border-red-400 rounded-full flex items-center justify-center">
-                          <div className={`w-16 h-16 ${story.color} rounded-full`}></div>
-                        </div>
-                        <span className="mt-2 text-center">{story.name}</span>
-                      </div>
-                    ))}
+            <div className="bg-[#E0CCFF] rounded-lg border-2 border-gray-800 p-4 mb-4">
+              <div className="flex space-x-16 justify-center">
+                {stories.map(story => (
+                  <div
+                    key={story.id}
+                    className="flex flex-col items-center"
+                    onClick={() => setSelectedStory(story)}
+                  >
+                    <div className="w-20 h-20 border-4 border-red-400 rounded-full flex items-center justify-center">
+                      <div className={`w-16 h-16 ${story.color} rounded-full`}></div>
+                    </div>
+                    <span className="mt-2 text-center">{story.name}</span>
                   </div>
-                </div>
-
-                {photoalbums?.photoAlbums && <PhotosList photoalbums={photoalbums.photoAlbums} />}
-              </div>
-              <div className="lg:w-[500px] overflow-y-auto max-h-[700px]">
-                  <div><RetroClock /></div>
-                  <button 
-                    onClick={() => navigate('/post/album')}
-                    className="w-full bg-cyspace-blue text-white py-3 px-6 rounded-lg text-lg font-bold border-2 border-gray-800 hover:bg-blue-700 transition-colors duration-200 mt-10"
-                  >
-                    Post Picture
-                  </button>
-                  <button 
-                    onClick={() => navigate('/post/diaryentry')}
-                    className="w-full bg-cyspace-blue text-white py-3 px-6 rounded-lg text-lg font-bold border-2 border-gray-800 hover:bg-blue-700 transition-colors duration-200 mt-5"
-                  >
-                    Post Diary
-                  </button>
-                  <button 
-                    onClick={() => window?.open?.(`http://localhost:9999/u/${username}`, '_blank').focus()}
-                    className="w-full bg-green-500 text-white py-3 px-6 rounded-lg text-lg font-bold border-2 border-gray-800 hover:bg-blue-700 transition-colors duration-200 mt-5"
-                  >
-                    Enter My Homespace
-                  </button>
-                  <GetButton 
-                    title="Log out" 
-                    apiFn={handleLogout} 
-                  />
+                ))}
               </div>
             </div>
+
+            {/* Tab Navigation */}
+            <div className="mb-4">
+              <div className="flex border-b-2 border-gray-800 mb-4">
+                <button
+                  className={`px-4 py-2 font-bold ${activeTab === "posts" ? "border-b-2 border-cyspace-blue text-cyspace-blue" : "text-gray-600"}`}
+                  onClick={() => setActiveTab("posts")}
+                >
+                  Posts
+                </button>
+                <button
+                  className={`px-4 py-2 font-bold ${activeTab === "diary" ? "border-b-2 border-cyspace-blue text-cyspace-blue" : "text-gray-600"}`}
+                  onClick={() => setActiveTab("diary")}
+                >
+                  Diary Entries
+                </button>
+              </div>
+
+              {/* Tab Content */}
+              {activeTab === "posts" && (
+                <div>
+                  {photoalbums?.photoAlbums ? (
+                    <PhotosList photoalbums={photoalbums.photoAlbums} />
+                  ) : (
+                    <div>No posts available.</div>
+                  )}
+                </div>
+              )}
+
+              {activeTab === "diary" && (
+                <div className="space-y-4">
+                  {diaryLoading && <div>Loading diary entries...</div>}
+                  {diaryError && <div>Error loading diary entries.</div>}
+                  {diaryEntries && diaryEntries.diaryEntries && diaryEntries.diaryEntries.map(entry => (
+                    <div key={entry.id} className="p-4 border border-gray-300 rounded-lg bg-yellow-50">
+                      <div className="text-gray-500 text-xs flex justify-between">
+                        <span>{new Date(parseInt(entry.timestamp) * 1000).toLocaleString()}</span>
+                        <span>{entry.author.slice(0, 6)}...{entry.author.slice(-6)}</span>
+                      </div>
+                      <div className="mt-2 text-lg font-serif">
+                        {entry.text}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Right sidebar */}
+          <div className="lg:w-[500px] overflow-y-auto max-h-[700px] p-4">
+            <div><RetroClock /></div>
+            <button
+              onClick={() => navigate('/post/album')}
+              className="w-full bg-cyspace-blue text-white py-3 px-6 rounded-lg text-lg font-bold border-2 border-gray-800 hover:bg-blue-700 transition-colors duration-200 mt-10"
+            >
+              Post Picture
+            </button>
+            <button
+              onClick={() => navigate('/post/diaryentry')}
+              className="w-full bg-cyspace-blue text-white py-3 px-6 rounded-lg text-lg font-bold border-2 border-gray-800 hover:bg-blue-700 transition-colors duration-200 mt-5"
+            >
+              Post Diary
+            </button>
+            <button
+              onClick={() => window?.open?.(`http://localhost:9999/u/${username}`, '_blank').focus()}
+              className="w-full bg-green-500 text-white py-3 px-6 rounded-lg text-lg font-bold border-2 border-gray-800 hover:bg-blue-700 transition-colors duration-200 mt-5"
+            >
+              Enter My Homespace
+            </button>
+            <GetButton
+              title="Log out"
+              apiFn={handleLogout}
+            />
           </div>
         </div>
       </div>
