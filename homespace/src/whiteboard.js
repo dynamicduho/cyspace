@@ -805,7 +805,7 @@ async saveToBlockchain() {
 
 
 // Extend the main.js init function to add the whiteboard
-export function initWhiteboard(scene, camera, controls, roomSize) {
+export function initWhiteboard(visitorAuthSession, scene, camera, controls, roomSize) {
     // Store camera and controls references globally
     window.camera = camera;
     window.controls = controls;

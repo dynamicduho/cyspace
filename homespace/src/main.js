@@ -16,7 +16,7 @@ import { applySimpleTextures } from './simple-textures.js';
 
 // Initialize cookies to access session
 const cookies = new Cookies();
-const authSession = cookies.get('auth_session'); //token: idToken (okto), userId: user (wallet), isLoggedIn
+const visitorAuthSession = cookies.get('auth_session'); //token: idToken (okto), userId: user (wallet), isLoggedIn
 
 let scene, camera, renderer, controls;
 const objects = [];
@@ -130,10 +130,10 @@ function init() {
     
     
     // Create chat dialog before loading models so it's ready when needed
-    createAvatarChatDialog(username);
+    createAvatarChatDialog(visitorAuthSession, username);
     
     // Setup click interaction for avatar
-    setupAvatarInteraction(scene, camera, controls);
+    setupAvatarInteraction(visitorAuthSession, scene, camera, controls);
 
     // Load Room Model and Avatar with loading manager
     const loadingManager = new THREE.LoadingManager(
@@ -155,12 +155,12 @@ function init() {
     
     // Load avatar using the new module
     // TODO: update avatar asset with user's avatar
-    loadAvatar(username, scene, loadingManager, objects);
+    loadAvatar(visitorAuthSession, username, scene, loadingManager, objects);
     
     // Initialize whiteboard
-    initWhiteboard(scene, camera, controls, roomSize);
+    initWhiteboard(visitorAuthSession, scene, camera, controls, roomSize);
 
-    initBookshelf(username, scene, camera, controls, loadingManager);
+    initBookshelf(visitorAuthSession, username, scene, camera, controls, loadingManager);
 
 
     addUsernameUI(username);

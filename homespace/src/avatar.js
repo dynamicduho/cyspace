@@ -12,7 +12,7 @@ let mixer; // Animation mixer for avatar
  * @param {Array} objects - Array to track objects for dragging
  * @returns {Promise<THREE.Group>} - Promise resolving to the avatar group
  */
-export function loadAvatar(username, scene, manager, objects) {
+export function loadAvatar(visitorAuthSession, username, scene, manager, objects) {
     const avatar_file_name = `avatar_${username}`;
     return new Promise((resolve, reject) => {
         const loader = new GLTFLoader(manager);
@@ -138,7 +138,7 @@ export function updateAvatarAnimations(delta) {
 /**
  * Creates a chat dialog for avatar interaction
  */
-export function createAvatarChatDialog(username) {
+export function createAvatarChatDialog(visitorAuthSession, username) {
     // Create dialog container
     const dialogContainer = document.createElement('div');
     dialogContainer.id = 'chat-dialog';
@@ -338,7 +338,7 @@ export function showAvatarChatDialog(controls) {
  * @param {THREE.Camera} camera - The camera
  * @param {OrbitControls} controls - The camera controls
  */
-export function setupAvatarInteraction(scene, camera, controls) {
+export function setupAvatarInteraction(visitorAuthSession, scene, camera, controls) {
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
     

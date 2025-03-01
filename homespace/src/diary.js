@@ -8,7 +8,7 @@ let scene, camera, controls;
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
-export function initBookshelf(username, sceneRef, cameraRef, controlsRef, loadingManager) {
+export function initBookshelf(visitorAuthSession, username, sceneRef, cameraRef, controlsRef, loadingManager) {
     scene = sceneRef;
     camera = cameraRef;
     controls = controlsRef;
