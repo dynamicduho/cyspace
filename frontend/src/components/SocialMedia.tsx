@@ -144,8 +144,8 @@ const SocialMedia = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                   {[...Array(6)].map((_, index) => (
                     <div key={index} className="bg-cyworld-blue border-2 border-gray-800 shadow-2xl rounded-2xl p-4 w-full h-80 flex flex-col items-center">
-                      <h2 className="text-lg font-semibold">John Doe</h2>
-                      <p className="text-gray-600 mt-2">Hello</p>
+                      <h2 className="text-lg font-semibold">Josh</h2>
+                      <p className="text-gray-600 mt-24 text-center">Updated his poker earnings</p>
                     </div>
                   ))}
                 </div>
