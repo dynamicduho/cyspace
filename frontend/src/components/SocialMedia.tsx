@@ -6,6 +6,9 @@ import RetroClock from './RetroClock';
 import { useQuery } from '@apollo/client';
 import { GET_ALL_PHOTO_ALBUMS } from '../query/photoalbums';
 import PhotosList from './PhotosList';
+import GetButton from './GetButton';
+import { googleLogout } from "@react-oauth/google";
+import Cookies from "universal-cookie";
 
 interface Friend {
   id: number;
@@ -36,6 +39,7 @@ const SocialMedia = () => {
   const oktoClient = useOkto();
     const userSWA = oktoClient.userSWA;
     const navigate = useNavigate();
+    const cookies = new Cookies();
 
     const handleFriendClick = (friend: Friend) => {
       window?.open?.(`http://localhost:9999/u/${friend.username}`, '_blank').focus();
@@ -51,6 +55,21 @@ const SocialMedia = () => {
 
   // Add state for modal
   const [selectedStory, setSelectedStory] = useState<{ name: string; color: string } | null>(null);
+
+  // Add logout handler
+  async function handleLogout() {
+    try {
+      cookies.remove('auth_session');
+      googleLogout();
+      localStorage.removeItem("googleIdToken");
+      oktoClient.sessionClear();
+      navigate("/");
+      return { result: "logout success" };
+    } catch (error) {
+      console.error("Logout failed:", error);
+      return { result: "logout failed" };
+    }
+  }
 
   return (
     
@@ -181,11 +200,20 @@ const SocialMedia = () => {
                   </button>
                   <button 
                     onClick={() => navigate('/post/diaryentry')}
-                    className="w-full bg-cyspace-blue text-white py-3 px-6 rounded-lg text-lg font-bold border-2 border-gray-800 hover:bg-blue-700 transition-colors duration-200 mb-4 mt-5"
+                    className="w-full bg-cyspace-blue text-white py-3 px-6 rounded-lg text-lg font-bold border-2 border-gray-800 hover:bg-blue-700 transition-colors duration-200 mt-5"
                   >
                     Post Diary
                   </button>
-                  <OktoIntents />
+                  <button 
+                    onClick={() => window?.open?.('http://localhost:9999/u/suyog', '_blank').focus()}
+                    className="w-full bg-cyspace-blue text-white py-3 px-6 rounded-lg text-lg font-bold border-2 border-gray-800 hover:bg-blue-700 transition-colors duration-200 mt-5"
+                  >
+                    Enter My Homespace
+                  </button>
+                  <GetButton 
+                    title="Log out" 
+                    apiFn={handleLogout} 
+                  />
               </div>
             </div>
           </div>

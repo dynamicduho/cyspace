@@ -69,9 +69,9 @@ const PhotosList: React.FC<PostsListProps> = ({ photoalbums }) => {
   };
 
   return (
-    <div className="posts-list p-4">
+    <div className="posts-list">
       {photoalbums.map((album) => (
-        <div key={album.id} className="post border border-gray-300 rounded p-4 mb-4">
+        <div key={album.id} className="post border border-gray-300 rounded p-4 mb-4 bg-gray-100">
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm text-gray-600">
               Author: {truncateAddress(album.author)}

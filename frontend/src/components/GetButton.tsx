@@ -31,7 +31,7 @@ const GetButton: React.FC<GetButtonProps> = ({ title, apiFn }) => {
   return (
     <div className="text-center">
       <button
-        className="w-full p-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+        className="w-full bg-cyspace-blue text-white py-3 px-6 rounded-lg text-lg font-bold border-2 border-gray-800 hover:bg-blue-700 transition-colors duration-200 mt-5"
         onClick={handleButtonClick}
       >
         {title}
