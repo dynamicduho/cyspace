@@ -78,10 +78,9 @@ app.post('/upload', upload.array('images', 10), async (req, res) => {
       
       fs.renameSync(file.path, newPath);
       
-      const fileKey = `album_${albumTimestamp}_${newName}`;
       const nodeFile = new NodeFile(newPath);
       const fileRequest = {
-        key: fileKey,
+        key: newName,
         content: nodeFile,
         type: 2,
         callback: {

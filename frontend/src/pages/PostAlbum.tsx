@@ -26,6 +26,11 @@ const PostAlbum = () => {
     setFiles(e.target.files);
   };
 
+  const truncateAddress = (address: string) => {
+    if (!address || address.length < 10) return address;
+    return `0x${address.slice(2, 5)}..${address.slice(-3)}`;
+  };
+
   const handleUpload = async () => {
     if (!caption || files.length === 0) {
       setError('Please enter a caption and select at least one image.');
@@ -241,7 +246,7 @@ const PostAlbum = () => {
                   <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
                     <h2 className="text-lg font-semibold text-blue-600 mb-2">Upload Successful!</h2>
                     <p className="text-sm text-gray-700">
-                      <strong>FlatDirectory Address:</strong> {uploadResult.flatDirectoryAddress}
+                      <strong>FlatDirectory Address:</strong> {truncateAddress(uploadResult.flatDirectoryAddress)}
                     </p>
                     <p className="text-sm text-gray-700 mt-2">
                       <strong>File Keys:</strong>

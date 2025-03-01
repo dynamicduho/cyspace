@@ -14,15 +14,56 @@ interface PostsListProps {
   photoalbums: PhotoAlbum[];
 }
 
+interface ImageWithFallbackProps {
+  primarySrc: string;
+  fallbackSrc: string;
+  alt: string;
+  className?: string;
+  onImageClick: (src: string) => void;
+}
+
+const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
+  primarySrc,
+  fallbackSrc,
+  alt,
+  className,
+  onImageClick,
+}) => {
+  const [src, setSrc] = useState(primarySrc);
+  const [triedFallback, setTriedFallback] = useState(false);
+
+  const handleError = () => {
+    if (!triedFallback) {
+      setTriedFallback(true);
+      setSrc(fallbackSrc);
+    } else {
+      setSrc(""); // Hide the image if fallback also fails
+    }
+  };
+
+  if (!src) return null;
+
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className={className}
+      onClick={() => onImageClick(src)}
+      onError={handleError}
+    />
+  );
+};
+
 const PhotosList: React.FC<PostsListProps> = ({ photoalbums }) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
+  // Helper function to truncate Ethereum addresses
   const truncateAddress = (address: string) => {
     if (!address || address.length < 10) return address;
     return `0x${address.slice(2, 5)}..${address.slice(-3)}`;
   };
 
-  // Handle image click to show the large view
+  // Handles clicking an image to open the modal with a larger view
   const handleImageClick = (url: string) => {
     setSelectedImage(url);
   };
@@ -41,24 +82,26 @@ const PhotosList: React.FC<PostsListProps> = ({ photoalbums }) => {
           </div>
           <div className="mb-2 text-gray-800">{album.caption}</div>
           <div className="flex space-x-2 mb-2">
-            {/* Each placeholder image is clickable and opens a modal with a larger view */}
-            <img
-              src={`https://${album.fileDirectory}.3337.w3link.io/1.png`}
+            <ImageWithFallback
+              primarySrc={`https://${album.fileDirectory}.3337.w3link.io/1.png`}
+              fallbackSrc={`https://${album.fileDirectory}.3337.w3link.io/1.jpg`}
               alt="post image 1"
               className="w-1/3 rounded cursor-pointer"
-              onClick={() => handleImageClick(`https://${album.fileDirectory}.3337.w3link.io/1.png`)}
+              onImageClick={handleImageClick}
             />
-            <img
-              src={`https://${album.fileDirectory}.3337.w3link.io/2.png`}
+            <ImageWithFallback
+              primarySrc={`https://${album.fileDirectory}.3337.w3link.io/2.png`}
+              fallbackSrc={`https://${album.fileDirectory}.3337.w3link.io/2.jpg`}
               alt="post image 2"
               className="w-1/3 rounded cursor-pointer"
-              onClick={() => handleImageClick(`https://${album.fileDirectory}.3337.w3link.io/2.png`)}
+              onImageClick={handleImageClick}
             />
-            <img
-              src={`https://${album.fileDirectory}.3337.w3link.io/3.png`}
+            <ImageWithFallback
+              primarySrc={`https://${album.fileDirectory}.3337.w3link.io/3.png`}
+              fallbackSrc={`https://${album.fileDirectory}.3337.w3link.io/3.jpg`}
               alt="post image 3"
               className="w-1/3 rounded cursor-pointer"
-              onClick={() => handleImageClick(`https://${album.fileDirectory}.3337.w3link.io/3.png`)}
+              onImageClick={handleImageClick}
             />
           </div>
           <div>
@@ -74,6 +117,7 @@ const PhotosList: React.FC<PostsListProps> = ({ photoalbums }) => {
         </div>
       ))}
 
+      {/* Modal for the large image view */}
       {selectedImage && (
         <div
           className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
