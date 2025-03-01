@@ -13,20 +13,21 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@supabase/supabase-js": "^2.49.1",
     "ethers": "^6.13.5",
     "three": "^0.173.0",
     "universal-cookie": "^7.2.2"
   },
   "devDependencies": {
-    "vite": "^6.1.1",
     "@coinbase/agentkit": "^0.2.3",
     "@coinbase/agentkit-langchain": "^0.2.3",
+    "@langchain/core": "^0.3.19",
     "@langchain/langgraph": "^0.2.21",
     "@langchain/openai": "^0.3.14",
-    "@langchain/core": "^0.3.19",
-    "dotenv": "^16.4.5",
-    "zod": "^3.22.4",
     "axios": "^1.6.7",
-    "ethers": "^6.7.1"
+    "dotenv": "^16.4.5",
+    "ethers": "^6.7.1",
+    "vite": "^6.1.1",
+    "zod": "^3.22.4"
   }
 }

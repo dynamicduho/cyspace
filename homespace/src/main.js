@@ -158,7 +158,7 @@ function init() {
     loadAvatar(visitorAuthSession, username, scene, loadingManager, objects);
     
     // Initialize whiteboard
-    initWhiteboard(visitorAuthSession, scene, camera, controls, roomSize);
+    initWhiteboard(visitorAuthSession, username, scene, camera, controls, roomSize);
 
     initBookshelf(visitorAuthSession, username, scene, camera, controls, loadingManager);
 
