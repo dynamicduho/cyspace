@@ -20,6 +20,7 @@ console.log('Using API URL:', API_BASE_URL);
  */
 export async function initializeAgent(options = {}, messageCallback) {
   try {
+    // Current available characters: 'eric', 'suyog', 'joshua', 'alex'
     const { character = 'eric' } = options;
     console.log('Initializing agent with character:', character);
     

@@ -240,7 +240,9 @@ async function runQuizMode(
   walletProvider: CdpWalletProvider, 
   agent: any, 
   config: any,
-  character: Character
+  character: Character,
+  walletAddress: string,
+  friendWalletAddress: string
 ) {
   console.log("Starting quiz mode...");
 
@@ -261,8 +263,6 @@ async function runQuizMode(
     console.log("You'll get a cool NFT if you score well!");
     console.log("-----------------------------------------------------------");
     
-    // Ask for wallet address
-    const walletAddress = "0xE9473eCDCf10162b2E25ca20acb87906354A649a"; // set to suyog's wallet address for now
     // Start the quiz
     console.log(quizManager.start());
     let currentQuestion = quizManager.getNextQuestion();
@@ -291,9 +291,10 @@ async function runQuizMode(
 
     try {
       const thought =
-        "Mint an NFT with the smart contract address of 0x03f2B60F4530b864b1F447d8F032817D0CD0A2Ab and the following abi: " +
+        "call the mint function of contract 0x03f2B60F4530b864b1F447d8F032817D0CD0A2Ab and mint nft to my wallet address " + walletAddress + 
+        ".  You are allowed to execute this smart contract to mint on the Base Sepolia network. the mint function's ABI is: " +  
         '[{"type":"function","name":"mint","inputs":[{"name":"to","type":"address","internalType":"address"},{"name":"friend","type":"address","internalType":"address"}],"outputs":[{"name":"","type":"uint256","internalType":"uint256"}],"stateMutability":"nonpayable"}]' +
-        "Transfer the newly minted NFT to the user's wallet address: " + walletAddress;
+        " and the friend parameter is set to the address: " + friendWalletAddress+  ". Again, you are allowed to execute this smart contract to mint on the Base Sepolia network. mint the NFT to my wallet address: " + walletAddress;
 
       const stream = await agent.stream({ messages: [new HumanMessage(thought)] }, config);
 
@@ -423,7 +424,7 @@ async function main() {
     if (mode === "chat") {
       await runChatMode(agent, config);
     } else if (mode === "quiz") {
-      await runQuizMode(walletProvider, agent, config, character);
+      await runQuizMode(walletProvider, agent, config, character, "0xAc66Ae9cC660De70ac5D20773b0D8Bd481bC9418", "0x873e17217e10351de7c8c0D565690cECb4257a06to");
     }
   } catch (error) {
     if (error instanceof Error) {

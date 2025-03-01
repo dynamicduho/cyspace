@@ -88,11 +88,15 @@ function createCharacterMessageModifier(character) {
 // Export Eric character by default
 const eric = loadCharacter("eric");
 const suyog = loadCharacter("suyog");
+const joshua = loadCharacter("joshua");
+const alex = loadCharacter("alex");
 
 module.exports = {
   loadCharacter,
   generateSystemPrompt,
   createCharacterMessageModifier,
   eric,
-  suyog
+  suyog,
+  joshua,
+  alex
 }; 

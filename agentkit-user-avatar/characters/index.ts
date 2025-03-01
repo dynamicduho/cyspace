@@ -104,4 +104,6 @@ export function createCharacterMessageModifier(character: Character): string {
 // Export Eric character by default
 export const eric = loadCharacter("eric");
 export const suyog = loadCharacter("suyog");
+export const joshua = loadCharacter("joshua");
+export const alex = loadCharacter("alex");
 export default eric;
