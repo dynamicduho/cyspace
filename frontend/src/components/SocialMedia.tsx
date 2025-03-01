@@ -24,7 +24,7 @@ const SocialMedia = () => {
     { id: 1, name: 'Eric', color: 'bg-orange-300' },
     { id: 2, name: 'Alex', color: 'bg-teal-300' },
     { id: 3, name: 'Suyog', color: 'bg-teal-700' },
-    { id: 4, name: 'Your Story', color: 'bg-pink-100', isYourStory: true },
+    { id: 4, name: 'Joshua', color: 'bg-pink-100'},
   ];
   const oktoClient = useOkto();
     const userSWA = oktoClient.userSWA;
@@ -136,16 +136,16 @@ const SocialMedia = () => {
               <div className='flex flex-col flex-1'>
                 
                 <div className="bg-[#E0CCFF] rounded-lg border-2 border-gray-800 p-4 mb-4">
-                  <div className="flex space-x-8 justify-center">
+                  <div className="flex space-x-16 justify-center">
                     {/* Your Story with plus sign */}
-                    <div className="flex flex-col items-center">
+                    {/* <div className="flex flex-col items-center">
                       <div className="relative w-20 h-20 border-4 border-red-400 rounded-full flex items-center justify-center">
                         <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
                           <span className="text-red-400 text-3xl font-bold">+</span>
                         </div>
                       </div>
                       <span className="mt-2 text-center">Your Story</span>
-                    </div>
+                    </div> */}
                     
                     {stories.map(story => !story.isYourStory && (
                       <div 
@@ -182,7 +182,7 @@ const SocialMedia = () => {
                   </button>
                   <button 
                     onClick={() => navigate('/post/diary')}
-                    className="w-full bg-cyworld-blue text-white py-3 px-6 rounded-lg text-lg font-bold border-2 border-gray-800 hover:bg-blue-700 transition-colors duration-200 mb-4"
+                    className="w-full bg-cyworld-blue text-white py-3 px-6 rounded-lg text-lg font-bold border-2 border-gray-800 hover:bg-blue-700 transition-colors duration-200 mb-4 mt-5"
                   >
                     Post Diary
                   </button>

@@ -46,7 +46,7 @@ const RetroClock: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center">
-      <h1 className="text-2xl font-bold mb-4 text-gray-800">Welcome {username || 'Guest'}</h1>
+      <h1 className="text-2xl font-bold mb-4 text-gray-800">Welcome {username || 'Guest'}!</h1>
       <div className="relative w-64 h-64 bg-[#99ccff] border-8 border-[#6699cc] rounded-full shadow-2xl flex items-center justify-center">
         {/* Clock Center Dot */}
         <div className="absolute w-4 h-4 bg-red-500 rounded-full z-20"></div>

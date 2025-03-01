@@ -2,7 +2,7 @@ const LoadingScreen = () => {
   return (
     <div className="fixed inset-0 bg-white bg-opacity-80 z-50 flex flex-col items-center justify-center">
       <div className="bg-white rounded-lg shadow-lg p-6 max-w-sm mx-auto border-4 border-cyworld-pink animate-pulse">
-        <h2 className="text-2xl font-rounded text-center text-blue-600 mb-4">
+        <h2 className="text-xl font-['Press_Start_2P'] text-center text-blue-600 mb-4">
           Loading...
         </h2>
         
@@ -22,12 +22,12 @@ const LoadingScreen = () => {
           </div>
         </div>
         
-        <p className="text-center font-comic text-sm text-gray-700">
+        <p className="text-center font-['Press_Start_2P'] text-xs text-gray-700">
           Entering your mini-homepage...
         </p>
         
         {/* Status updates */}
-        <div className="mt-4 text-xs font-comic text-center text-gray-500">
+        <div className="mt-4 text-xs font-['Press_Start_2P'] text-center text-gray-500">
           <div className="animate-pulse">Please wait a moment ♥</div>
         </div>
       </div>

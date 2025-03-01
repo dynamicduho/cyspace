@@ -73,30 +73,35 @@ app.post('/upload', upload.array('images', 10), async (req, res) => {
       const ext = path.extname(file.originalname);
       const newName = `${i + 1}${ext}`;
       renamedFiles.push(newName);
+      
+      const newPath = path.join('uploads', newName);
+      
+      fs.renameSync(file.path, newPath);
+      
       const fileKey = `album_${albumTimestamp}_${newName}`;
-      const nodeFile = new NodeFile(file.path);
+      const nodeFile = new NodeFile(newPath);
       const fileRequest = {
         key: fileKey,
         content: nodeFile,
         type: 2,
         callback: {
           onProgress: (progress, count) => {
-            console.log(`File ${file.originalname} progress: ${progress} / ${count}`);
+            console.log(`File ${newName} progress: ${progress} / ${count}`);
           },
           onFail: (err) => {
-            console.error(`File ${file.originalname} upload failed:`, err);
+            console.error(`File ${newName} upload failed:`, err);
           },
           onFinish: (chunks, size, cost) => {
-            console.log(`File ${file.originalname} uploaded: ${chunks} chunks, cost: ${cost}`);
+            console.log(`File ${newName} uploaded: ${chunks} chunks, cost: ${cost}`);
           }
         }
       };
 
       await newFlatDirectory.upload(fileRequest);
-      console.log(`File ${file.originalname} renamed to ${newName} and uploaded`);
+      console.log(`File renamed to ${newName} and uploaded`);
 
-      fs.unlink(file.path, (err) => {
-        if (err) console.error("Error removing file:", file.path, err);
+      fs.unlink(newPath, (err) => {
+        if (err) console.error("Error removing file:", newPath, err);
       });
     }
 
