@@ -1,6 +1,7 @@
 // avatar.js
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { initializeAgent, sendMessageToAgent, getWelcomeMessage, resetAgent } from './agentBridge.js';
 
 let mixer; // Animation mixer for avatar
 // TODO: load avatar from ethstorage or walrus instead of from public asset folder
@@ -48,42 +49,29 @@ export function loadAvatar(visitorAuthSession, username, scene, manager, objects
                 // Default avatar properties
                 avatarGroup.rotation.y = Math.PI/4; // Face diagonally
                 
-                // Enable shadows and fix frustum culling for all meshes in the avatar
+                // Mark the avatar for interaction
+                avatarGroup.userData.isAvatar = true;
+                
+                // Also mark all child meshes for interaction
                 avatar.traverse((child) => {
                     if (child.isMesh) {
+                        child.userData.isAvatar = true;
                         child.castShadow = true;
                         child.receiveShadow = true;
-                        
-                        // Make all avatar meshes clickable
-                        child.userData.isAvatar = true;
-                        
-                        // Fix frustum culling issues by adjusting the bounding sphere
-                        if (child.geometry) {
-                            child.geometry.computeBoundingSphere();
-                            // Slightly increase the bounding sphere radius to prevent culling
-                            if (child.geometry.boundingSphere) {
-                                child.geometry.boundingSphere.radius *= 1.2;
-                            }
-                        }
-                        
-                        // Ensure mesh doesn't disappear when close to camera
-                        child.frustumCulled = false;
                     }
                 });
-
+                
+                // Add to scene and objects array
                 scene.add(avatarGroup);
+                objects.push(avatarGroup);
                 
-                // Add to objects array for dragging
-                if (objects) {
-                    objects.push(avatarGroup);
-                }
-                
+                console.log('Avatar loaded successfully');
                 resolve(avatarGroup);
-            }, 
+            },
             // onProgress callback
             (xhr) => {
                 console.log(`Avatar ${(xhr.loaded / xhr.total * 100).toFixed(2)}% loaded`);
-            }, 
+            },
             // onError callback
             (error) => {
                 console.error('Error loading avatar:', error);
@@ -197,14 +185,15 @@ export function createAvatarChatDialog(visitorAuthSession, username) {
     messagesContainer.style.overflowY = 'auto';
     messagesContainer.style.backgroundColor = '#f5f5f5';
     
-    // Add welcome message
-    const welcomeMessage = document.createElement('div');
-    welcomeMessage.style.backgroundColor = '#e0f7fa';
-    welcomeMessage.style.borderRadius = '10px';
-    welcomeMessage.style.padding = '10px';
-    welcomeMessage.style.marginBottom = '10px';
-    welcomeMessage.innerHTML = 'Hello! How can I help you today?';
-    messagesContainer.appendChild(welcomeMessage);
+    // Create loading indicator
+    const loadingIndicator = document.createElement('div');
+    loadingIndicator.id = 'loading-indicator';
+    loadingIndicator.style.display = 'none';
+    loadingIndicator.style.textAlign = 'center';
+    loadingIndicator.style.padding = '10px';
+    loadingIndicator.style.color = '#666';
+    loadingIndicator.innerHTML = 'Initializing AI agent...';
+    messagesContainer.appendChild(loadingIndicator);
     
     // Create input area
     const inputContainer = document.createElement('div');
@@ -230,60 +219,117 @@ export function createAvatarChatDialog(visitorAuthSession, username) {
     sendButton.style.borderRadius = '20px';
     sendButton.style.cursor = 'pointer';
     
+    // Flag to track if agent is initialized
+    let isAgentInitialized = false;
+    
+    // Function to add a message to the chat
+    const addMessage = (text, isUser = false) => {
+        const messageDiv = document.createElement('div');
+        messageDiv.style.backgroundColor = isUser ? '#bbdefb' : '#e0f7fa';
+        messageDiv.style.color = 'black';
+        messageDiv.style.borderRadius = '10px';
+        messageDiv.style.padding = '10px';
+        messageDiv.style.marginBottom = '10px';
+        messageDiv.style.maxWidth = '80%';
+        
+        if (isUser) {
+            messageDiv.style.marginLeft = 'auto';
+            messageDiv.style.textAlign = 'right';
+        } else {
+            messageDiv.style.marginRight = 'auto';
+        }
+        
+        // Handle newlines in the text
+        const formattedText = text.replace(/\n/g, '<br>');
+        messageDiv.innerHTML = formattedText;
+        
+        messagesContainer.appendChild(messageDiv);
+        
+        // Auto scroll to bottom
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    };
+    
+    // Function to handle agent responses
+    const handleAgentResponse = (response) => {
+        addMessage(response, false);
+    };
+    
+    // Function to initialize the agent when the dialog is shown
+    window.initializeAgentForChat = async () => {
+        if (!isAgentInitialized) {
+            console.log('Starting agent initialization...');
+            
+            // Show loading indicator
+            loadingIndicator.style.display = 'block';
+            
+            try {
+                // Initialize agent
+                console.log('Calling initializeAgent...');
+                const success = await initializeAgent({ character: username }, handleAgentResponse);
+                
+                if (success) {
+                    console.log('Agent initialized successfully');
+                    isAgentInitialized = true;
+                    // Hide loading indicator
+                    loadingIndicator.style.display = 'none';
+                    // Add welcome message
+                    addMessage(getWelcomeMessage(), false);
+                } else {
+                    console.error('Failed to initialize agent');
+                    // Hide loading indicator
+                    loadingIndicator.style.display = 'none';
+                    // Show error message
+                    addMessage("Failed to initialize AI agent. Please try again later.", false);
+                }
+            } catch (error) {
+                console.error('Error initializing agent:', error);
+                // Hide loading indicator
+                loadingIndicator.style.display = 'none';
+                // Show error message
+                addMessage("Error initializing AI agent: " + error.message, false);
+            }
+        } else {
+            console.log('Agent already initialized');
+        }
+    };
+    
     // Add event listener for sending messages
-    const sendMessage = () => {
+    const sendMessage = async () => {
         const messageText = textInput.value.trim();
         if (messageText) {
-            // Create user message
-            const userMessage = document.createElement('div');
-            userMessage.style.backgroundColor = '#bbdefb';
-            userMessage.style.color = 'black';
-            userMessage.style.borderRadius = '10px';
-            userMessage.style.padding = '10px';
-            userMessage.style.marginBottom = '10px';
-            userMessage.style.marginLeft = '20%';
-            userMessage.style.textAlign = 'right';
-            userMessage.innerHTML = messageText;
-            messagesContainer.appendChild(userMessage);
+            console.log('Sending message:', messageText);
+            
+            // Add user message to chat
+            addMessage(messageText, true);
             
             // Clear input
             textInput.value = '';
             
-            // Auto scroll to bottom
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            
-            // Simulate avatar response after a short delay
-            setTimeout(() => {
-                // Create avatar response
-                const avatarResponse = document.createElement('div');
-                avatarResponse.style.backgroundColor = '#e0f7fa';
-                avatarResponse.style.borderRadius = '10px';
-                avatarResponse.style.padding = '10px';
-                avatarResponse.style.marginBottom = '10px';
-                avatarResponse.style.marginRight = '20%';
+            try {
+                // Send message to agent
+                console.log('Calling sendMessageToAgent...');
+                const result = await sendMessageToAgent(messageText, handleAgentResponse);
+                console.log('Message sent, result:', result);
                 
-                // Simple responses based on user input
-                const lowercaseMsg = messageText.toLowerCase();
-                let responseText = '';
-                
-                if (lowercaseMsg.includes('hello') || lowercaseMsg.includes('hi')) {
-                    responseText = 'Hello there! Nice to meet you!';
-                } else if (lowercaseMsg.includes('name')) {
-                    responseText = 'My name is Ava, your virtual assistant!';
-                } else if (lowercaseMsg.includes('help')) {
-                    responseText = 'I can help you navigate the room or answer questions. What would you like to know?';
-                } else if (lowercaseMsg.includes('room')) {
-                    responseText = 'This is a virtual room created with Three.js. Feel free to explore!';
-                } else {
-                    responseText = 'Interesting! Tell me more about that.';
+                // Check if we should close the dialog
+                if (result && result.exit) {
+                    console.log('Exit flag received, closing dialog in 2 seconds');
+                    setTimeout(() => {
+                        closeChatDialog(window.controls);
+                        // Reset agent state
+                        console.log('Resetting agent state');
+                        resetAgent();
+                        isAgentInitialized = false;
+                        // Clear messages
+                        while (messagesContainer.firstChild) {
+                            messagesContainer.removeChild(messagesContainer.firstChild);
+                        }
+                    }, 2000);
                 }
-                
-                avatarResponse.innerHTML = responseText;
-                messagesContainer.appendChild(avatarResponse);
-                
-                // Auto scroll to bottom
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            }, 1000);
+            } catch (error) {
+                console.error('Error sending message:', error);
+                addMessage("Error sending message: " + error.message, false);
+            }
         }
     };
     
@@ -317,6 +363,18 @@ function closeChatDialog(controls) {
     if (dialog) {
         dialog.style.display = 'none';
         if (controls) controls.enabled = true;
+        
+        // Reset agent state
+        resetAgent();
+        
+        // Clear messages
+        const messagesContainer = document.getElementById('chat-messages');
+        if (messagesContainer) {
+            // Keep only the loading indicator
+            while (messagesContainer.childNodes.length > 1) {
+                messagesContainer.removeChild(messagesContainer.lastChild);
+            }
+        }
     }
 }
 
@@ -329,6 +387,16 @@ export function showAvatarChatDialog(controls) {
     if (dialog) {
         dialog.style.display = 'flex';
         if (controls) controls.enabled = false;
+        
+        // Initialize the agent when the dialog is shown
+        if (window.initializeAgentForChat) {
+            console.log('Initializing agent for chat...');
+            window.initializeAgentForChat();
+        } else {
+            console.error('initializeAgentForChat function not found');
+        }
+    } else {
+        console.error('Chat dialog element not found');
     }
 }
 

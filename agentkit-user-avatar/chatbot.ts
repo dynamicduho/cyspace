@@ -287,12 +287,13 @@ async function runQuizMode(
       }
     }
     
-    console.log("\nThank you for taking the quiz! Here's your NFT:");
+    console.log("\nThank you for taking the quiz! You scored over 50%! Here's your NFT:");
 
     try {
       const thought =
-        "Mint an NFT for the user with the following metadata: " +
-        "Transfer the NFT to the user's wallet address: " + walletAddress;
+        "Mint an NFT with the smart contract address of 0x03f2B60F4530b864b1F447d8F032817D0CD0A2Ab and the following abi: " +
+        '[{"type":"function","name":"mint","inputs":[{"name":"to","type":"address","internalType":"address"},{"name":"friend","type":"address","internalType":"address"}],"outputs":[{"name":"","type":"uint256","internalType":"uint256"}],"stateMutability":"nonpayable"}]' +
+        "Transfer the newly minted NFT to the user's wallet address: " + walletAddress;
 
       const stream = await agent.stream({ messages: [new HumanMessage(thought)] }, config);
 
@@ -439,3 +440,5 @@ if (require.main === module) {
     process.exit(1);
   });
 }
+
+export { initializeAgent };
