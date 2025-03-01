@@ -12,18 +12,17 @@ interface Friend {
 const SocialMedia = () => {
   // Sample data for friends
   const friends = [
-    { id: 1, name: 'Sarah Johnson', online: true, color: 'bg-teal-300' },
-    { id: 2, name: 'Mike Richards', online: true, color: 'bg-orange-300' },
-    { id: 3, name: 'Alex Wong', online: false, color: 'bg-pink-100' },
-    { id: 4, name: 'Jamie Smith', online: true, color: 'bg-teal-700' },
-    { id: 5, name: 'Taylor Moore', online: false, color: 'bg-gray-200' },
+    { id: 1, name: 'Suyog Joshi', online: true, color: 'bg-teal-300' },
+    { id: 2, name: 'Joshua Kim', online: true, color: 'bg-orange-300' },
+    { id: 3, name: 'Alex Lu', online: false, color: 'bg-pink-100' },
+    { id: 4, name: 'Eric Liu', online: true, color: 'bg-teal-700' },
   ];
 
   // Sample data for stories
   const stories = [
-    { id: 1, name: 'Sarah', color: 'bg-orange-300' },
-    { id: 2, name: 'Mike', color: 'bg-teal-300' },
-    { id: 3, name: 'Alex', color: 'bg-teal-700' },
+    { id: 1, name: 'Eric', color: 'bg-orange-300' },
+    { id: 2, name: 'Alex', color: 'bg-teal-300' },
+    { id: 3, name: 'Suyog', color: 'bg-teal-700' },
     { id: 4, name: 'Your Story', color: 'bg-pink-100', isYourStory: true },
   ];
   const oktoClient = useOkto();
@@ -88,16 +87,18 @@ const SocialMedia = () => {
         
         <div className="flex h-full">
           {/* Left sidebar - Friends */}
-          <div className="w-72 border-r-2 border-gray-800 p-4">
+          <div className="w-80 border-r-2 border-gray-800 p-4">
             <h2 className="text-2xl mb-6 font-bold text-gray-800">Friends</h2>
             
             <div className="space-y-6">
               {friends.map(friend => (
-                <div key={friend.id} onClick={() => handleFriendClick(friend)} className="flex items-center hover:scale-105 cursor-pointer hover:bg-sky-200">
-                  <div className={`w-12 h-12 ${friend.color} rounded-full mr-4 border-2 border-gray-800`}></div>
-                  <span className="text-lg text-gray-800">{friend.name}</span>
+                <div key={friend.id} onClick={() => handleFriendClick(friend)} className="flex items-center justify-between hover:scale-105 cursor-pointer hover:bg-sky-200">
+                  <div className="flex items-center">
+                    <div className={`w-12 h-12 ${friend.color} rounded-full mr-4 border-2 border-gray-800`}></div>
+                    <span className="text-lg text-gray-800">{friend.name}</span>
+                  </div>
                   {friend.online && (
-                    <div className="w-4 h-4 bg-green-500 rounded-full ml-2"></div>
+                    <div className="w-4 h-4 bg-green-500 rounded-full"></div>
                   )}
                 </div>
               ))}
@@ -114,8 +115,8 @@ const SocialMedia = () => {
             
             
 
-            <div className="flex flex-row justify-between">
-              <div className='flex flex-col'>
+            <div className="flex flex-col lg:flex-row justify-between gap-6">
+              <div className='flex flex-col flex-1'>
                 
                 <div className="bg-[#E0CCFF] rounded-lg border-2 border-gray-800 p-4 mb-4">
                   <div className="flex space-x-8 justify-center">
@@ -140,16 +141,17 @@ const SocialMedia = () => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                  {[...Array(12)].map((_, index) => (
-                    <div key={index} className="bg-cyworld-blue border-2 border-gray-800 shadow-2xl rounded-2xl p-4 w-60 h-80 flex flex-col items-center">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                  {[...Array(6)].map((_, index) => (
+                    <div key={index} className="bg-cyworld-blue border-2 border-gray-800 shadow-2xl rounded-2xl p-4 w-full h-80 flex flex-col items-center">
                       <h2 className="text-lg font-semibold">John Doe</h2>
                       <p className="text-gray-600 mt-2">Hello</p>
                     </div>
                   ))}
                 </div>
+                
               </div>
-              <div className="overflow-y-auto max-h-[700px] max-w-[500px]">
+              <div className="lg:w-[500px] overflow-y-auto max-h-[700px]">
                   <OktoIntents />
               </div>
             </div>
