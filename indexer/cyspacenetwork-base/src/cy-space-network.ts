@@ -77,7 +77,7 @@ export function handlePhotoCreated(event: PhotoCreatedEvent): void {
 
   if (contentAddress !== new Address(0)) {
     let entity = new PhotoAlbum(
-      event.transaction.hash.concatI32(event.logIndex.toI32())
+      event.transaction.hash
     );
     entity.author = event.params.author;
     entity.caption = event.params.caption;
