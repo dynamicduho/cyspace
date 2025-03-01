@@ -233,7 +233,7 @@ const SocialMedia = () => {
                         <span>{new Date(parseInt(entry.timestamp) * 1000).toLocaleString()}</span>
                         <span>{entry.author.slice(0, 6)}...{entry.author.slice(-6)}</span>
                       </div>
-                      <div className="mt-2 text-lg font-serif">
+                      <div className="mt-2 text-lg font-serif" style={{ fontFamily: "'Press Start 2P', cursive", fontSize: '12px', lineHeight: '1.6' }}>
                         {entry.text}
                       </div>
                     </div>
