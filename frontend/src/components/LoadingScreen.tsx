@@ -1,12 +1,12 @@
 const LoadingScreen = () => {
   return (
     <div className="fixed inset-0 bg-white bg-opacity-80 z-50 flex flex-col items-center justify-center">
-      <div className="bg-white rounded-lg shadow-lg p-6 max-w-sm mx-auto border-4 border-cyworld-pink animate-pulse">
+      <div className="bg-white rounded-lg shadow-lg p-6 max-w-sm mx-auto border-4 border-cyspace-pink animate-pulse">
         <h2 className="text-xl font-['Press_Start_2P'] text-center text-blue-600 mb-4">
           Loading...
         </h2>
         
-        {/* Custom spinner with cyworld theme */}
+        {/* Custom spinner with cyspace theme */}
         <div className="flex justify-center mb-4">
           <div className="relative w-24 h-24">
             {/* Outer circle */}

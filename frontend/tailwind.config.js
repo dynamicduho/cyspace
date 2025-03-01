@@ -9,9 +9,9 @@ export default {
         rounded: ['Sniglet', 'cursive'],
       },
       colors: {
-        'cyworld-pink': '#ffcce0',
-        'cyworld-blue': '#99ccff',
-        'cyworld-yellow': '#ffcc66',
+        'cyspace-pink': '#ffcce0',
+        'cyspace-blue': '#99ccff',
+        'cyspace-yellow': '#ffcc66',
       },
       borderWidth: {
         '3': '3px',

@@ -54,7 +54,7 @@ const SocialMedia = () => {
 
   return (
     
-    <div className="bg-amber-50 min-h-screen flex justify-center bg-cyworld-pink">
+    <div className="bg-amber-50 min-h-screen flex justify-center bg-cyspace-pink">
       {/* Modal */}
       {selectedStory && (
         <div 
@@ -70,7 +70,7 @@ const SocialMedia = () => {
 
       <div className="w-full border-2 border-gray-800 rounded-lg overflow-hidden">
         {/* Top navigation bar */}
-        <div className="bg-cyworld-blue p-4 flex items-center justify-between border-b-2 border-gray-800">
+        <div className="bg-cyspace-blue p-4 flex items-center justify-between border-b-2 border-gray-800">
           <div className="text-white text-3xl font-bold">CySpace</div>
           
           <div className="bg-white rounded-full w-full max-w-md mx-4 px-4 py-2 flex items-center relative">
@@ -175,13 +175,13 @@ const SocialMedia = () => {
                   <div><RetroClock /></div>
                   <button 
                     onClick={() => navigate('/post/album')}
-                    className="w-full bg-cyworld-blue text-white py-3 px-6 rounded-lg text-lg font-bold border-2 border-gray-800 hover:bg-blue-700 transition-colors duration-200 mt-10"
+                    className="w-full bg-cyspace-blue text-white py-3 px-6 rounded-lg text-lg font-bold border-2 border-gray-800 hover:bg-blue-700 transition-colors duration-200 mt-10"
                   >
                     Post Picture
                   </button>
                   <button 
                     onClick={() => navigate('/post/diary')}
-                    className="w-full bg-cyworld-blue text-white py-3 px-6 rounded-lg text-lg font-bold border-2 border-gray-800 hover:bg-blue-700 transition-colors duration-200 mb-4 mt-5"
+                    className="w-full bg-cyspace-blue text-white py-3 px-6 rounded-lg text-lg font-bold border-2 border-gray-800 hover:bg-blue-700 transition-colors duration-200 mb-4 mt-5"
                   >
                     Post Diary
                   </button>

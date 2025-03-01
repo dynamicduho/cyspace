@@ -34,7 +34,7 @@ export default function BioPage() {
             if (error) throw error;
 
             // Still keep in localStorage for quick access
-            localStorage.setItem('cyworld_user_data', JSON.stringify(userData));
+            localStorage.setItem('cyspace_user_data', JSON.stringify(userData));
 
             // Navigate to home page
             navigate(`/home`);
@@ -45,8 +45,8 @@ export default function BioPage() {
     };
 
     return (
-        <main className="min-h-screen flex items-center justify-center bg-cyworld-pink">
-            <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-2xl mx-4 cyworld-notebook">
+        <main className="min-h-screen flex items-center justify-center bg-cyspace-pink">
+            <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-2xl mx-4 cyspace-notebook">
                 {/* Top Navigation Bar */}
                 <div className="flex justify-between items-center mb-3 px-2 py-1 bg-gray-100 rounded-t-md border-b border-gray-300">
                     <div className="flex space-x-1">
@@ -116,7 +116,7 @@ export default function BioPage() {
                                     type="submit"
                                     className="w-full py-2 bg-yellow-400 hover:bg-yellow-500 text-gray-900 rounded-full border-2 border-b-4 border-r-4 border-yellow-600 transition duration-200 text-sm"
                                 >
-                                    Enter Cyworld
+                                    Enter Cyspace!
                                 </button>
                             </form>
 

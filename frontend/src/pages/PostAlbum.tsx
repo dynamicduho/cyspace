@@ -152,8 +152,8 @@ const PostAlbum = () => {
   }, [oktoClient]);
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-cyworld-pink">
-      <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-2xl mx-4 cyworld-notebook">
+    <main className="min-h-screen flex items-center justify-center bg-cyspace-pink">
+      <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-2xl mx-4 cyspace-notebook">
         {/* Top Navigation Bar */}
         <div className="flex justify-between items-center mb-3 px-2 py-1 bg-gray-100 rounded-t-md border-b border-gray-300">
           <div className="flex space-x-1">
