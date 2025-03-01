@@ -117,8 +117,11 @@ const SocialMedia = () => {
       <div className="w-full border-2 border-gray-800 rounded-lg overflow-hidden">
         {/* Top navigation bar */}
         <div className="bg-cyspace-blue p-4 flex items-center justify-between border-b-2 border-gray-800">
-          <div className="text-white text-3xl font-bold">CySpace</div>
-
+          <div className="flex items-center gap-2">
+            <div className="text-white text-3xl font-bold">CySpace</div>
+            <img src="/Logo.png" alt="CySpace Logo" className="h-12 w-auto" />
+          </div>
+          
           <div className="bg-white rounded-full w-full max-w-md mx-4 px-4 py-2 flex items-center relative">
             <input
               type="text"

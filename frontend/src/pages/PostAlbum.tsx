@@ -171,7 +171,7 @@ const PostAlbum = () => {
           {/* Left Column - Preview Area */}
           <div className="border-r border-gray-200 pr-4 md:col-span-1">
             <div className="bg-white p-2 rounded mb-3 border border-gray-200">
-              <h2 className="text-center text-blue-500 mb-2 border-b border-gray-200 pb-1 text-lg">Preview</h2>
+              <h2 className="text-center text-blue-500 mb-2 border-b border-gray-200 pb-1 text-sm">Preview</h2>
               <div className="pixel-avatar bg-gray-100 h-24 w-24 mx-auto mb-2 relative overflow-hidden">
                 {files.length > 0 && (
                   <img 

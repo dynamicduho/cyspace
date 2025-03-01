@@ -109,7 +109,7 @@ export default function LoginPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {/* Left Column - Profile Area */}
-          <div className="border-r border-gray-200 pr-4 md:col-span-1">
+          {/* <div className="border-r border-gray-200 pr-4 md:col-span-1">
             <div className="bg-white p-2 rounded mb-3 border border-gray-200">
               <h2 className="text-center text-blue-500 mb-2 border-b border-gray-200 pb-1 text-lg">TODAY is...</h2>
               <div className="pixel-avatar bg-gray-100 h-24 w-24 mx-auto mb-2 relative overflow-hidden">
@@ -127,10 +127,10 @@ export default function LoginPage() {
                 <span className="bg-yellow-100 px-1 rounded-sm">🔔 0</span>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Middle & Right Columns - Main Content */}
-          <div className="md:col-span-3">
+          <div className="md:col-span-4">
             <div className="bg-white rounded border border-gray-200 p-5 mb-4">
               <h1 className="text-2xl font-bold text-center text-blue-600 mb-4 border-b border-gray-200 pb-2">
                 Cyspace
@@ -139,12 +139,9 @@ export default function LoginPage() {
                 Sign in with your account to enter your homespace!
               </p>
 
-              {/* Pixelated Room Preview */}
-              <div className="pixel-room mb-6 h-64 bg-blue-50 rounded border border-gray-200 relative">
-                <div className="absolute bottom-6 right-8 pixel-character-standing"></div>
-                <div className="absolute top-4 left-4 pixel-computer"></div>
-                <div className="absolute bottom-4 left-28 pixel-plant"></div>
-                <div className="absolute top-4 right-4 pixel-window"></div>
+              {/* Logo */}
+              <div className="mb-6 flex justify-center">
+                <img src="/Logo.png" alt="Cyspace Logo" className="h-64 object-contain" />
               </div>
 
               {/* Login Options */}
