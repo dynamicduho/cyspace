@@ -23,7 +23,7 @@ const LoadingScreen = () => {
         </div>
         
         <p className="text-center font-['Press_Start_2P'] text-xs text-gray-700">
-          Entering your mini-homepage...
+          Signing into Cyspace...
         </p>
         
         {/* Status updates */}

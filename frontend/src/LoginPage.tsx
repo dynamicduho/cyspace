@@ -133,10 +133,10 @@ export default function LoginPage() {
           <div className="md:col-span-3">
             <div className="bg-white rounded border border-gray-200 p-5 mb-4">
               <h1 className="text-2xl font-bold text-center text-blue-600 mb-4 border-b border-gray-200 pb-2">
-                HomeSpace
+                Cyspace
               </h1>
               <p className="text-center text-sm mb-6 text-gray-700">
-                Sign in with your account to enter your mini-homepage!
+                Sign in with your account to enter your homespace!
               </p>
 
               {/* Pixelated Room Preview */}
