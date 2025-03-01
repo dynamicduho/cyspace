@@ -63,8 +63,8 @@ const PostDiary = () => {
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-cyworld-pink">
-      <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-2xl mx-4 cyworld-notebook">
+    <main className="min-h-screen flex items-center justify-center bg-cyspace-pink">
+      <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-2xl mx-4 cyspace-notebook">
         {/* Top Navigation Bar */}
         <div className="flex justify-between items-center mb-3 px-2 py-1 bg-gray-100 rounded-t-md border-b border-gray-300">
           <div className="flex space-x-1">
@@ -80,7 +80,7 @@ const PostDiary = () => {
         
         <div className="bg-white rounded border border-gray-200 p-5 mb-4">
           <h1 className="text-2xl font-bold text-center text-blue-600 mb-4 border-b border-gray-200 pb-2">
-            Post Diary Entry
+            Post Diary
           </h1>
           <div className="space-y-6">
             <div>
@@ -138,6 +138,14 @@ const PostDiary = () => {
         <div className="flex justify-between items-center text-xs text-gray-500">
           <span>Made with love by Alex, Suyog, Josh, Eric</span>
         </div>
+      </div>
+      <div className="absolute bottom-8">
+        <button 
+          onClick={() => window.history.back()}
+          className="px-6 py-2 bg-white hover:bg-gray-100 text-gray-800 rounded-full shadow-lg transition duration-200"
+        >
+          Back
+        </button>
       </div>
     </main>
   );

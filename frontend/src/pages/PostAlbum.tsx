@@ -181,9 +181,9 @@ const PostAlbum = () => {
                   />
                 )}
               </div>
-              <p className="text-center text-xs text-gray-700">
+              {/* <p className="text-center text-xs text-gray-700">
                 {caption || "Add a caption"}
-              </p>
+              </p> */}
             </div>
           </div>
 
@@ -191,7 +191,7 @@ const PostAlbum = () => {
           <div className="md:col-span-3">
             <div className="bg-white rounded border border-gray-200 p-5 mb-4">
               <h1 className="text-2xl font-bold text-center text-blue-600 mb-4 border-b border-gray-200 pb-2">
-                Upload Album
+                Post pictures
               </h1>
 
               <div className="space-y-6">
@@ -296,6 +296,14 @@ const PostAlbum = () => {
             </div>
           </div>
         </div>
+      </div>
+      <div className="absolute bottom-8">
+        <button 
+          onClick={() => window.history.back()}
+          className="px-6 py-2 bg-white hover:bg-gray-100 text-gray-800 rounded-full shadow-lg transition duration-200"
+        >
+          Back
+        </button>
       </div>
     </main>
   );

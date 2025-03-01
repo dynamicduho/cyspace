@@ -10,6 +10,7 @@ import GetButton from './GetButton';
 import { googleLogout } from "@react-oauth/google";
 import Cookies from "universal-cookie";
 import { supabase } from './supabaseClient';
+import { getWalletOrUsername } from '../helper';
 
 interface Friend {
   id: number;
