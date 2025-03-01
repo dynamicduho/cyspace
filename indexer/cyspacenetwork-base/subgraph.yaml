@@ -1,0 +1,44 @@
+specVersion: 1.2.0
+indexerHints:
+  prune: auto
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: CySpaceNetwork
+    network: base-sepolia
+    source:
+      address: "0x297eCc73d6029a16f3B0166e3C6A5F1fA0F56b1B"
+      abi: CySpaceNetwork
+      startBlock: 22000000
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - AdminAdded
+        - AdminRemoved
+        - DiaryCreated
+        - FriendAdded
+        - FriendRemoved
+        - OwnershipTransferred
+        - PhotoCreated
+      abis:
+        - name: CySpaceNetwork
+          file: ./abis/CySpaceNetwork.json
+      eventHandlers:
+        - event: AdminAdded(indexed address)
+          handler: handleAdminAdded
+        - event: AdminRemoved(indexed address)
+          handler: handleAdminRemoved
+        - event: DiaryCreated(indexed address,string,uint256)
+          handler: handleDiaryCreated
+        - event: FriendAdded(indexed address,indexed address)
+          handler: handleFriendAdded
+        - event: FriendRemoved(indexed address,indexed address)
+          handler: handleFriendRemoved
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+        - event: PhotoCreated(indexed address,string,uint256)
+          handler: handlePhotoCreated
+      file: ./src/cy-space-network.ts

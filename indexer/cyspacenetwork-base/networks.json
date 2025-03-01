@@ -1,0 +1,8 @@
+{
+  "base-sepolia": {
+    "CySpaceNetwork": {
+      "address": "0x297eCc73d6029a16f3B0166e3C6A5F1fA0F56b1B",
+      "startBlock": 22000000
+    }
+  }
+}
