@@ -7,14 +7,14 @@ import {
   PhotoCreated as PhotoCreatedEvent
 } from "../generated/CySpaceNetwork/CySpaceNetwork"
 import {
-  DiaryCreated,
+  DiaryEntry,
   FriendAdded,
   FriendRemoved,
   PhotoAlbum
 } from "../generated/schema"
 
 export function handleDiaryCreated(event: DiaryCreatedEvent): void {
-  let entity = new DiaryCreated(
+  let entity = new DiaryEntry(
     event.transaction.hash.concatI32(event.logIndex.toI32())
   )
   entity.author = event.params.author

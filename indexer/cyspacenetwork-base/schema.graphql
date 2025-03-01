@@ -1,4 +1,4 @@
-type DiaryCreated @entity(immutable: true) {
+type DiaryEntry @entity(immutable: true) {
   id: Bytes!
   author: Bytes! # address
   text: String! # string

@@ -180,7 +180,7 @@ const SocialMedia = () => {
                     Post Picture
                   </button>
                   <button 
-                    onClick={() => navigate('/post/diary')}
+                    onClick={() => navigate('/post/diaryentry')}
                     className="w-full bg-cyspace-blue text-white py-3 px-6 rounded-lg text-lg font-bold border-2 border-gray-800 hover:bg-blue-700 transition-colors duration-200 mb-4 mt-5"
                   >
                     Post Diary
