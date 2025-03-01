@@ -20,10 +20,10 @@ const SocialMedia = () => {
 
   // Sample data for friends
   const friends = [
-    { id: 1, name: 'Suyog Joshi', online: true, color: 'bg-teal-300' },
-    { id: 2, name: 'Joshua Kim', online: true, color: 'bg-orange-300' },
-    { id: 3, name: 'Alex Lu', online: false, color: 'bg-pink-100' },
-    { id: 4, name: 'Eric Liu', online: true, color: 'bg-teal-700' },
+    { id: 1, username: "suyog", name: 'Suyog Joshi', online: true, color: 'bg-teal-300' },
+    { id: 2, username: "joshua", name: 'Joshua Kim', online: true, color: 'bg-orange-300' },
+    { id: 3, username: "alex", name: 'Alex Lu', online: false, color: 'bg-pink-100' },
+    { id: 4, username: "eric", name: 'Eric Liu', online: true, color: 'bg-teal-700' },
   ];
 
   // Sample data for stories
@@ -38,7 +38,7 @@ const SocialMedia = () => {
     const navigate = useNavigate();
 
     const handleFriendClick = (friend: Friend) => {
-      window?.open?.('http://localhost:9999/u/suyog', '_blank').focus();
+      window?.open?.(`http://localhost:9999/u/${friend.username}`, '_blank').focus();
         // navigate(`http://localhost:9999/`, {
         //    
         // });
