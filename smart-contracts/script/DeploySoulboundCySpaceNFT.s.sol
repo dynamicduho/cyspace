@@ -7,11 +7,12 @@ import "../src/SoulboundCySpaceFriendNFT.sol";
 contract DeploySoulboundCySpaceNFT is Script {
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+        address deployer = vm.addr(deployerPrivateKey);
         vm.startBroadcast(deployerPrivateKey);
         SoulboundCySpaceFriendNFT nft = new SoulboundCySpaceFriendNFT(
             "Friendship on CySpace",
             "CYFRIEND",
-            msg.sender
+            deployer
         );
         vm.stopBroadcast();
 
