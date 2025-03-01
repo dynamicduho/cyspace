@@ -4,24 +4,6 @@ import { useOkto } from "@okto_web3/react-sdk";
 import { useNavigate } from 'react-router-dom';
 import RetroClock from './RetroClock';
 
-// Add this keyframe animation
-const styles = `
-  @keyframes modalPop {
-    from {
-      opacity: 0;
-      transform: scale(0.95);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
-
-  .animate-modal {
-    animation: modalPop 0.3s ease-out forwards;
-  }
-`;
-
 interface Friend {
   id: number;
   name: string;
@@ -69,10 +51,10 @@ const SocialMedia = () => {
       {/* Modal */}
       {selectedStory && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 transition-opacity duration-300 ease-in-out"
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
           onClick={() => setSelectedStory(null)}
         >
-          <div className="w-80 h-96 rounded-2xl overflow-hidden flex flex-col transform transition-transform duration-300 ease-in-out animate-modal">
+          <div className="w-80 h-96 rounded-2xl overflow-hidden flex flex-col">
             <div className={`flex-1 ${selectedStory.color}`}></div>
             <div className="bg-white p-4 text-center font-semibold">{selectedStory.name}</div>
           </div>
@@ -200,7 +182,7 @@ const SocialMedia = () => {
                   </button>
                   <button 
                     onClick={() => navigate('/post/diary')}
-                    className="w-full bg-cyworld-blue text-white py-3 px-6 rounded-lg text-lg font-bold border-2 border-gray-800 hover:bg-blue-700 transition-colors duration-200 mb-4 mt-5"
+                    className="w-full bg-cyworld-blue text-white py-3 px-6 rounded-lg text-lg font-bold border-2 border-gray-800 hover:bg-blue-700 transition-colors duration-200 mb-4"
                   >
                     Post Diary
                   </button>
