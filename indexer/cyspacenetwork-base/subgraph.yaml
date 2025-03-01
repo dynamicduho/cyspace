@@ -16,29 +16,20 @@ dataSources:
       apiVersion: 0.0.9
       language: wasm/assemblyscript
       entities:
-        - AdminAdded
-        - AdminRemoved
         - DiaryCreated
         - FriendAdded
         - FriendRemoved
-        - OwnershipTransferred
-        - PhotoCreated
+        - PhotoAlbum
       abis:
         - name: CySpaceNetwork
           file: ./abis/CySpaceNetwork.json
       eventHandlers:
-        - event: AdminAdded(indexed address)
-          handler: handleAdminAdded
-        - event: AdminRemoved(indexed address)
-          handler: handleAdminRemoved
         - event: DiaryCreated(indexed address,string,uint256)
           handler: handleDiaryCreated
         - event: FriendAdded(indexed address,indexed address)
           handler: handleFriendAdded
         - event: FriendRemoved(indexed address,indexed address)
           handler: handleFriendRemoved
-        - event: OwnershipTransferred(indexed address,indexed address)
-          handler: handleOwnershipTransferred
         - event: PhotoCreated(indexed address,string,uint256)
           handler: handlePhotoCreated
       file: ./src/cy-space-network.ts
