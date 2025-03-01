@@ -1,4 +1,4 @@
-import { useOkto } from "@okto_web3/react-sdk";
+import { getAccount, useOkto } from "@okto_web3/react-sdk";
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from './supabaseClient';
@@ -13,12 +13,14 @@ export default function BioPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        const wallets = await getAccount(oktoClient);
         
         // Create user data object
         const userData = {
             username,
             bio,
-            wallet_address: userSWA,
+            wallet_address: wallets.filter(wallet => wallet.networkName === "BASE_TESTNET")[0].address,
             created_at: new Date().toISOString()
         };
 
