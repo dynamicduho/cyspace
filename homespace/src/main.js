@@ -239,7 +239,7 @@ function addUsernameUI(username) {
     const ui = document.createElement('div');
     ui.id = 'ui';
     ui.innerHTML = `
-        <div style="background-color: rgba(0,0,0,0.5); color: white; padding: 10px; border-radius: 5px;">
+        <div style="background-color: rgba(0,0,0,0.5); color: white; padding: 10px; border-radius: 5px; font-family: 'Press Start 2P'; font-size: 10px;">
             <h3>Welcome to @${username}'s homespace</h3>
         </div>
     `;

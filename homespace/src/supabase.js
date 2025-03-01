@@ -11,6 +11,34 @@ if (!supabaseUrl || !supabaseKey) {
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 
+export async function getBaseWallet(username) {
+  try {
+    const { data, error } = await supabase
+      .from('users')
+      .select('wallet_address')
+      .eq('username', username)
+      .single();
+
+    if (error) {
+      // If no data found, just return null instead of throwing an error
+      if (error.code === 'PGRST116') {
+        console.log(`No BASE wallet data found for user: ${username}`);
+        return null;
+      }
+
+      console.error('Error retrieving BASE wallet from Supabase:', error);
+      throw new Error(`Failed to retrieve wallet data: ${error.message}`);
+    }
+
+    // Return the wallet address if found
+    return data?.wallet_address || null;
+  } catch (error) {
+    console.error('Exception retrieving wallet from Supabase:', error);
+    throw error;
+  }
+}
+
+
 
 /**
  * Save whiteboard blob ID to Supabase for a specific user

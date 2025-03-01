@@ -1,12 +1,16 @@
 // diary.js - New file to handle diary functionality
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { getBaseWallet } from './supabase';
+import { GET_DIARY_ENTRIES } from './query/diary-query';
 
 let bookshelfModel;
 let diaryEntries = [];
 let scene, camera, controls;
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
+
+const GRAPHQL_ENDPOINT = 'https://api.studio.thegraph.com/query/105689/cyspacenetwork-base/version/latest/';
 
 export function initBookshelf(visitorAuthSession, username, sceneRef, cameraRef, controlsRef, loadingManager) {
     scene = sceneRef;
@@ -51,7 +55,7 @@ export function initBookshelf(visitorAuthSession, username, sceneRef, cameraRef,
             window.addEventListener('click', onMouseClick);
             
             // Load existing diary entries if available
-            loadDiaryEntries();
+            loadDiaryEntries(username);
         },
         (xhr) => {
             console.log(`Bookshelf ${(xhr.loaded / xhr.total * 100).toFixed(2)}% loaded`);
@@ -175,7 +179,7 @@ function openDiaryUI() {
     
     // Title
     const title = document.createElement('h2');
-    title.textContent = 'Personal Diary';
+    title.textContent = 'Diary Entries';
     title.style.textAlign = 'center';
     title.style.color = '#3e2723';
     title.style.margin = '0 0 15px 0';
@@ -193,6 +197,7 @@ function openDiaryUI() {
         cursor: pointer;
         color: #3e2723;
     `;
+    
     // Cleanup function to remove all event listeners and elements
     function cleanupDiaryUI() {
         // Remove global event listeners
@@ -226,7 +231,7 @@ function openDiaryUI() {
         cleanupDiaryUI();
     };
     
-    // Entries container
+    // Entries container - now takes full height since we removed the text entry section
     const entriesContainer = document.createElement('div');
     entriesContainer.style.cssText = `
         flex: 1;
@@ -234,55 +239,13 @@ function openDiaryUI() {
         background-color: #fff;
         border-radius: 5px;
         padding: 10px;
-        margin-bottom: 15px;
         border: 1px solid #d7ccc8;
     `;
     
-    // New entry section
-    const newEntrySection = document.createElement('div');
-    newEntrySection.style.cssText = `
-        display: flex;
-        flex-direction: column;
-    `;
-    
-    const textArea = document.createElement('textarea');
-    textArea.placeholder = 'Write a new diary entry...';
-    textArea.style.cssText = `
-        height: 100px;
-        padding: 10px;
-        margin-bottom: 10px;
-        border-radius: 5px;
-        border: 1px solid #d7ccc8;
-        font-family: 'Courier New', monospace;
-        resize: none;
-    `;
-    
-    const saveButton = document.createElement('button');
-    saveButton.textContent = 'Save Entry';
-    saveButton.style.cssText = `
-        background-color: #5d4037;
-        color: white;
-        border: none;
-        padding: 10px;
-        border-radius: 5px;
-        cursor: pointer;
-        font-family: 'Courier New', monospace;
-    `;
-    saveButton.onclick = () => {
-        if (textArea.value.trim() !== '') {
-            addDiaryEntry(textArea.value);
-            textArea.value = '';
-            updateEntriesDisplay(entriesContainer);
-        }
-    };
-    
-    // Assemble UI
-    newEntrySection.appendChild(textArea);
-    newEntrySection.appendChild(saveButton);
+    // Assemble UI - now without the text entry section
     diaryUI.appendChild(title);
     diaryUI.appendChild(closeButton);
     diaryUI.appendChild(entriesContainer);
-    diaryUI.appendChild(newEntrySection);
     document.body.appendChild(diaryUI);
     
     // Add keyboard event listener to close diary with ESC key
@@ -294,21 +257,8 @@ function openDiaryUI() {
     
     document.addEventListener('keydown', handleKeyDown);
     
-    document.addEventListener('keydown', handleKeyDown);
-    
     // Display existing entries
     updateEntriesDisplay(entriesContainer);
-}
-
-function addDiaryEntry(content) {
-    const newEntry = {
-        id: Date.now(),
-        content: content,
-        date: new Date().toLocaleString()
-    };
-    
-    diaryEntries.unshift(newEntry); // Add to beginning of array
-    saveDiaryEntries();
 }
 
 function updateEntriesDisplay(container) {
@@ -316,7 +266,7 @@ function updateEntriesDisplay(container) {
     
     if (diaryEntries.length === 0) {
         const noEntries = document.createElement('p');
-        noEntries.textContent = 'No diary entries yet. Start writing!';
+        noEntries.textContent = 'No diary entries yet...!';
         noEntries.style.color = '#9e9e9e';
         noEntries.style.textAlign = 'center';
         noEntries.style.marginTop = '20px';
@@ -356,13 +306,68 @@ function updateEntriesDisplay(container) {
     });
 }
 
-function saveDiaryEntries() {
-    localStorage.setItem('diaryEntries', JSON.stringify(diaryEntries));
-}
 
-function loadDiaryEntries() {
-    const savedEntries = localStorage.getItem('diaryEntries');
-    if (savedEntries) {
-        diaryEntries = JSON.parse(savedEntries);
+async function loadDiaryEntries(username) {
+    try {
+        // Get the wallet address for the user
+        const baseWalletID = await getBaseWallet(username);
+        console.log(username);
+        
+        if (!baseWalletID) {
+            console.warn('No wallet address available for user:', username);
+            return;
+        }
+        
+        // Fetch diary entries from the GraphQL endpoint
+        const response = await fetch(GRAPHQL_ENDPOINT, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                query: GET_DIARY_ENTRIES,
+                variables: {
+                    walletAddress: String(baseWalletID)
+                }
+            })
+        });
+        
+        const result = await response.json();
+        console.log("diary result:", result);
+        
+        if (result.errors) {
+            console.error('Error fetching diary entries from GraphQL:', result.errors);
+            return;
+        }
+        
+        // Update diary entries with the fetched data
+        if (result.data && result.data.diaryEntries) {
+            // Transform the GraphQL data structure to match what updateEntriesDisplay expects
+            diaryEntries = result.data.diaryEntries.map(entry => {
+                // Convert timestamp to Date object and format as locale string
+                const entryDate = new Date(parseInt(entry.timestamp) * 1000).toLocaleString();
+                
+                return {
+                    id: entry.id, // Keep the original ID or use timestamp
+                    content: entry.text, // GraphQL has 'text' but we need 'content'
+                    date: entryDate // Convert timestamp to formatted date string
+                };
+            });
+            console.log(`Loaded ${diaryEntries.length} diary entries from GraphQL`);
+        } else {
+            console.log('No diary entries found in GraphQL, checking local storage');
+            // Try to load from local storage as fallback
+            const savedEntries = localStorage.getItem('diaryEntries');
+            if (savedEntries) {
+                diaryEntries = JSON.parse(savedEntries);
+            }
+        }
+    } catch (error) {
+        console.error('Error loading diary entries:', error);
+        // Try to load from local storage as fallback
+        const savedEntries = localStorage.getItem('diaryEntries');
+        if (savedEntries) {
+            diaryEntries = JSON.parse(savedEntries);
+        }
     }
 }

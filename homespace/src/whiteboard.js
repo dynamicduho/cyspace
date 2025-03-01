@@ -188,6 +188,8 @@ export class Whiteboard {
         container.style.padding = '10px';
         container.style.borderRadius = '10px';
         container.style.zIndex = '100';
+        container.style.fontFamily = "'Press Start 2P', cursive";
+
         
         // Color picker
         const colorPicker = document.createElement('input');
@@ -198,6 +200,7 @@ export class Whiteboard {
         
         // Stroke width slider
         const strokeLabel = document.createElement('label');
+        strokeLabel.fontFamily = 'Press Start 2P';
         strokeLabel.textContent = 'Stroke Width:';
         strokeLabel.style.fontFamily = "'Inter', sans-serif"; 
         strokeLabel.style.marginRight = '5px';
@@ -216,11 +219,13 @@ export class Whiteboard {
         clearButton.style.padding = '5px 10px';
         clearButton.style.marginRight = '10px';
         clearButton.onclick = () => this.clearWhiteboard();
+        clearButton.style.fontFamily = "'Press Start 2P', cursive"; // Add font to button
         
         // Save button
         const saveButton = document.createElement('button');
         saveButton.textContent = 'Save';
         saveButton.style.padding = '5px 10px';
+        saveButton.style.fontFamily = "'Press Start 2P', cursive"; // Add font to button
         saveButton.onclick = () => this.saveToBlockchain(this.username);
 
         // Add all elements to the container
@@ -827,7 +832,7 @@ export class Whiteboard {
         messageContainer.style.color = 'white';
         messageContainer.style.borderRadius = '5px';
         messageContainer.style.zIndex = '1000';
-        messageContainer.style.fontFamily = "'Inter', sans-serif"; 
+        messageContainer.style.fontFamily = "'Press Start 2P', cursive"; // Changed from 'Inter'
         messageContainer.textContent = message;
         
         document.body.appendChild(messageContainer);
@@ -841,7 +846,7 @@ export class Whiteboard {
         // Convert canvas to data URL
         const dataUrl = this.canvas.toDataURL('image/png');
         localStorage.setItem('whiteboardData', dataUrl);
-        this.showMessage("Uploading whiteboard to Walrus");
+        this.showMessage("Uploading whiteboard to Walrus, please wait...");
 
         try {
             const blobId = await saveWhiteboardToWalrus(dataUrl, this.username);
@@ -849,7 +854,7 @@ export class Whiteboard {
 
             const supabaseResult = await saveBlobIdToSupabase(blobId, this.username);
             if (supabaseResult.success) {
-                this.showMessage("Whiteboard saved successfully!");
+                this.showMessage(`Whiteboard saved successfully! BlobID ${blobId}`, );
                 this.hasUnsavedChanges = false;
                 return true;
             } else {
