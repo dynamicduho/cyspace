@@ -385,8 +385,8 @@ async function chooseMode(): Promise<"chat" | "quiz"> {
   // eslint-disable-next-line no-constant-condition
   while (true) {
     console.log("\nAvailable modes:");
-    console.log("1. chat    - Interactive chat mode");
-    console.log("2. quiz    - Take a quiz about the character and earn an NFT");
+    console.log("1. chat    - Chat with me!");
+    console.log("2. quiz    - Take a quiz about me and earn an NFT");
 
     const choice = (await question("\nChoose a mode (enter number or name): "))
       .toLowerCase()
@@ -404,18 +404,21 @@ async function chooseMode(): Promise<"chat" | "quiz"> {
 }
 
 /**
- * Start the chatbot agent
+ * Main function to start the chatbot
  */
 async function main() {
   try {
-    // First, choose a character
+    // Choose character
     const character = eric;
     console.log(`Selected character: ${character.name}`);
     
-    // Initialize agent with the selected character
+    // Initialize agent
     const { agent, config, walletProvider } = await initializeAgent(character);
+    
+    // Choose mode
     const mode = await chooseMode();
-
+    
+    // Run in selected mode
     if (mode === "chat") {
       await runChatMode(agent, config);
     } else if (mode === "quiz") {
@@ -430,7 +433,7 @@ async function main() {
 }
 
 if (require.main === module) {
-  console.log("Starting Agent...");
+  console.log("Starting agent...");
   main().catch(error => {
     console.error("Fatal error:", error);
     process.exit(1);
