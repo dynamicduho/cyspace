@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import OktoIntents from './OktoIntents';
 import { useOkto } from "@okto_web3/react-sdk";
 import { useNavigate } from 'react-router-dom';
@@ -9,6 +9,7 @@ import PhotosList from './PhotosList';
 import GetButton from './GetButton';
 import { googleLogout } from "@react-oauth/google";
 import Cookies from "universal-cookie";
+import { supabase } from './supabaseClient';
 
 interface Friend {
   id: number;
@@ -18,8 +19,32 @@ interface Friend {
 
 const SocialMedia = () => {
   const { loading, error, data: photoalbums } = useQuery(GET_ALL_PHOTO_ALBUMS);
+  const [username, setUsername] = useState('');
+  const oktoClient = useOkto();
+  const userSWA = oktoClient.userSWA;
+  const navigate = useNavigate();
+  const cookies = new Cookies();
 
-  console.log("photoalbums", photoalbums);
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('users')
+          .select('username')
+          .eq('wallet_address', userSWA)
+          .single();
+
+        if (error) throw error;
+        if (data) {
+          setUsername(data.username);
+        }
+      } catch (err) {
+        console.error('Error fetching user data:', err);
+      }
+    };
+
+    fetchUserData();
+  }, [userSWA]);
 
   // Sample data for friends
   const friends = [
@@ -36,22 +61,18 @@ const SocialMedia = () => {
     { id: 3, name: 'Suyog', color: 'bg-teal-700' },
     { id: 4, name: 'Joshua', color: 'bg-pink-100'},
   ];
-  const oktoClient = useOkto();
-    const userSWA = oktoClient.userSWA;
-    const navigate = useNavigate();
-    const cookies = new Cookies();
 
-    const handleFriendClick = (friend: Friend) => {
-      window?.open?.(`http://localhost:9999/u/${friend.username}`, '_blank').focus();
-        // navigate(`http://localhost:9999/`, {
-        //    
-        // });
-      };
-    const [query, setQuery] = useState("");
-  
-    // Filter friends based on search query
-    const filteredFriends = friends.filter(friend =>
-      friend.name.toLowerCase().includes(query.toLowerCase()));
+  const handleFriendClick = (friend: Friend) => {
+    window?.open?.(`http://localhost:9999/u/${friend.username}`, '_blank').focus();
+    // navigate(`http://localhost:9999/`, {
+    //    
+    // });
+  };
+  const [query, setQuery] = useState("");
+
+  // Filter friends based on search query
+  const filteredFriends = friends.filter(friend =>
+    friend.name.toLowerCase().includes(query.toLowerCase()));
 
   // Add state for modal
   const [selectedStory, setSelectedStory] = useState<{ name: string; color: string } | null>(null);
@@ -205,8 +226,8 @@ const SocialMedia = () => {
                     Post Diary
                   </button>
                   <button 
-                    onClick={() => window?.open?.('http://localhost:9999/u/suyog', '_blank').focus()}
-                    className="w-full bg-cyspace-blue text-white py-3 px-6 rounded-lg text-lg font-bold border-2 border-gray-800 hover:bg-blue-700 transition-colors duration-200 mt-5"
+                    onClick={() => window?.open?.(`http://localhost:9999/u/${username}`, '_blank').focus()}
+                    className="w-full bg-green-500 text-white py-3 px-6 rounded-lg text-lg font-bold border-2 border-gray-800 hover:bg-blue-700 transition-colors duration-200 mt-5"
                   >
                     Enter My Homespace
                   </button>
