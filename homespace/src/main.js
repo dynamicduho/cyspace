@@ -3,12 +3,20 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { initWhiteboard } from './whiteboard.js';
+import Cookies from 'universal-cookie';
 import { 
     loadAvatar, 
     updateAvatarAnimations, 
     createAvatarChatDialog, 
     setupAvatarInteraction 
 } from './avatar.js';
+import { initBookshelf } from './diary.js';
+import { applySimpleTextures } from './simple-textures.js';
+
+
+// Initialize cookies to access session
+const cookies = new Cookies();
+const authSession = cookies.get('auth_session'); //token: idToken (okto), userId: user (wallet), isLoggedIn
 
 let scene, camera, renderer, controls;
 const objects = [];
@@ -16,6 +24,15 @@ const clock = new THREE.Clock(); // For animation timing
 const roomSize = 12;
 
 function init() {
+    const currentUrl = new URL(window.location.href);
+    const pathMatch = currentUrl.pathname.match(/^\/u\/([a-zA-Z0-9_-]+)$/);
+    
+    if (!pathMatch) {
+        userNotFound();
+        return;
+    }
+    const username = pathMatch[1]
+    console.log(`Loading homespace for user: ${username}`);
     // Scene Setup
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0x87CEEB);
@@ -91,18 +108,29 @@ function init() {
     scene.add(fillLight);
 
     // Floor
-    const floor = new THREE.Mesh(
-        new THREE.PlaneGeometry(50, 50),
-        new THREE.MeshStandardMaterial({ color: 0xECE2D4 })
-    );
+    const floorGeometry = new THREE.PlaneGeometry(50, 50);
+    const floorMaterial = new THREE.MeshStandardMaterial({ 
+        color: 0xECE2D4,
+        roughness: 0.7,
+        metalness: 0.2
+    });
+
+    const floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.rotation.x = -Math.PI / 2;
-    floor.receiveShadow = true; // Receive shadows
+    floor.receiveShadow = true;
+    floor.name = "floor"; // Add a name to easily find it later
     scene.add(floor);
+
 
     addWalls();
 
+    applySimpleTextures(scene).catch(error => {
+        console.error("Failed to apply textures:", error);
+    });
+    
+    
     // Create chat dialog before loading models so it's ready when needed
-    createAvatarChatDialog();
+    createAvatarChatDialog(username);
     
     // Setup click interaction for avatar
     setupAvatarInteraction(scene, camera, controls);
@@ -127,10 +155,15 @@ function init() {
     
     // Load avatar using the new module
     // TODO: update avatar asset with user's avatar
-    loadAvatar("avatar_1740437619613", scene, loadingManager, objects);
+    loadAvatar(username, scene, loadingManager, objects);
     
     // Initialize whiteboard
     initWhiteboard(scene, camera, controls, roomSize);
+
+    initBookshelf(username, scene, camera, controls, loadingManager);
+
+
+    addUsernameUI(username);
 
     // Resize Handling
     window.addEventListener('resize', onWindowResize);
@@ -138,17 +171,99 @@ function init() {
     animate();
 }
 
+function userNotFound() {
+    // Clear the current page content
+    document.body.innerHTML = '';
+    
+    // Create error container
+    const errorContainer = document.createElement('div');
+    errorContainer.style.cssText = `
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      color: #333;
+    `;
+    
+    // Add error message
+    const errorHeading = document.createElement('h1');
+    errorHeading.textContent = 'User Space Not Found';
+    errorHeading.style.marginBottom = '16px';
+    
+    const errorMessage = document.createElement('p');
+    errorMessage.textContent = 'The requested user space does not exist or the URL format is invalid.';
+    errorMessage.style.marginBottom = '24px';
+    
+    // Add close button
+    const closeButton = document.createElement('button');
+    closeButton.textContent = 'Close Page';
+    closeButton.style.cssText = `
+      padding: 12px 24px;
+      background-color: #4285f4;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+    `;
+    closeButton.addEventListener('click', () => {
+      // Attempt to close the window
+      window.close();
+      
+      // If window.close() doesn't work (due to browser security restrictions),
+      // show a message instructing the user to close the tab manually
+      setTimeout(() => {
+        errorMessage.textContent = 'Please close this tab manually. Some browsers prevent pages from closing themselves.';
+        closeButton.style.display = 'none';
+      }, 300);
+    });
+    
+    // Add all elements to the container
+    errorContainer.appendChild(errorHeading);
+    errorContainer.appendChild(errorMessage);
+    errorContainer.appendChild(closeButton);
+    
+    // Add container to the body
+    document.body.appendChild(errorContainer);
+    
+    // Stop any further loading or initialization
+    console.error('Invalid URL pattern - user space not loaded');
+}
+    
+
+
+function addUsernameUI(username) {
+    const ui = document.createElement('div');
+    ui.id = 'ui';
+    ui.innerHTML = `
+        <div style="background-color: rgba(0,0,0,0.5); color: white; padding: 10px; border-radius: 5px;">
+            <h3>Welcome to @${username}'s homespace</h3>
+        </div>
+    `;
+    document.body.appendChild(ui);
+}
+
 // Walls
 function createWall(width, height, depth, x, y, z, name) {
     const wallGeometry = new THREE.BoxGeometry(width, height, depth);
-    const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xe0f7fa });
+    
+    // Create a basic material (will be replaced with textured material)
+    const wallMaterial = new THREE.MeshStandardMaterial({ 
+        color: 0xe0f7fa,
+        roughness: 0.9,
+        metalness: 0.1 
+    });
+    
     const wall = new THREE.Mesh(wallGeometry, wallMaterial);
-    wall.name = name
+    wall.name = name;
     wall.position.set(x, y, z);
     wall.castShadow = true;
     wall.receiveShadow = true;
     scene.add(wall);
-    return wall; // Return the wall for potential later reference
+    return wall;
 }
 
 // Add four walls

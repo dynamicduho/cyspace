@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 let mixer; // Animation mixer for avatar
-
+// TODO: load avatar from ethstorage or walrus instead of from public asset folder
 /**
  * Loads an avatar model and adds it to the scene
  * @param {string} avatar_file_name - Name of the avatar file
@@ -12,7 +12,8 @@ let mixer; // Animation mixer for avatar
  * @param {Array} objects - Array to track objects for dragging
  * @returns {Promise<THREE.Group>} - Promise resolving to the avatar group
  */
-export function loadAvatar(avatar_file_name, scene, manager, objects) {
+export function loadAvatar(username, scene, manager, objects) {
+    const avatar_file_name = `avatar_${username}`;
     return new Promise((resolve, reject) => {
         const loader = new GLTFLoader(manager);
         loader.load(
@@ -37,14 +38,15 @@ export function loadAvatar(avatar_file_name, scene, manager, objects) {
                     });
                 }
 
-                // Setup avatar properties
-                avatar.scale.set(1, 1, 1);
-                avatar.position.set(0, 0, 0);
-                avatar.rotation.y = Math.PI/4;
-                
                 // Create an avatar group to ensure all parts stay together
                 const avatarGroup = new THREE.Group();
                 avatarGroup.add(avatar);
+                
+                // Fix avatar position based on model
+                fixAvatarPosition(avatar, avatarGroup);
+                
+                // Default avatar properties
+                avatarGroup.rotation.y = Math.PI/4; // Face diagonally
                 
                 // Enable shadows and fix frustum culling for all meshes in the avatar
                 avatar.traverse((child) => {
@@ -91,6 +93,38 @@ export function loadAvatar(avatar_file_name, scene, manager, objects) {
     });
 }
 
+
+/**
+ * Fixes avatar position based on model examination
+ * @param {THREE.Object3D} avatar - The avatar model
+ * @param {THREE.Group} avatarGroup - The group containing the avatar
+ */
+function fixAvatarPosition(avatar, avatarGroup) {
+    // Get the bounding box of the avatar to determine its dimensions
+    const boundingBox = new THREE.Box3().setFromObject(avatar);
+    const height = boundingBox.max.y - boundingBox.min.y;
+    const center = new THREE.Vector3();
+    boundingBox.getCenter(center);
+    
+    console.log(`Avatar dimensions - Height: ${height}, Center Y: ${center.y}, Min Y: ${boundingBox.min.y}`);
+    
+    // If the model has a negative minimum Y, it means part of it is below the origin
+    // We need to adjust it so the bottom is at Y=0 (ground level)
+    if (boundingBox.min.y < 0) {
+        // Adjust avatar position by setting Y position to compensate for the part below ground
+        avatarGroup.position.y = Math.abs(boundingBox.min.y);
+        console.log(`Adjusting avatar Y position to: ${avatarGroup.position.y}`);
+    } else {
+        // If the model's bottom is already at or above ground level, 
+        // make sure it's exactly at ground level
+        avatarGroup.position.y = 0;
+    }
+    
+    // Set X and Z position
+    avatarGroup.position.x = 0;
+    avatarGroup.position.z = 0;
+}
+
 /**
  * Updates avatar animations
  * @param {number} delta - Time delta for animation
@@ -104,7 +138,7 @@ export function updateAvatarAnimations(delta) {
 /**
  * Creates a chat dialog for avatar interaction
  */
-export function createAvatarChatDialog() {
+export function createAvatarChatDialog(username) {
     // Create dialog container
     const dialogContainer = document.createElement('div');
     dialogContainer.id = 'chat-dialog';
@@ -134,7 +168,7 @@ export function createAvatarChatDialog() {
     header.style.display = 'flex';
     header.style.justifyContent = 'space-between';
     header.style.alignItems = 'center';
-    header.innerHTML = '<span>Chat with Avatar</span>';
+    header.innerHTML = `<span>Chat with @${username}'s Avatar</span>`;
     
     // Add close button to header
     const closeButton = document.createElement('button');
