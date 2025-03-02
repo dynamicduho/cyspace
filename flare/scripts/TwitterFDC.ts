@@ -21,7 +21,7 @@ const {
 } = process.env;
 
 // Update this with the deployed contract address
-const TWITTER_READER_ADDRESS = "0xEfF7f0DA1A30722C8Ea03e2cA519bB16187B1Fe2";  // or make it dynamic
+const TWITTER_READER_ADDRESS = "0x47701672178Caca354bE2F05E3158bA98beeCb54";  // or make it dynamic
 
 async function deployTwitterReader() {
     const reader: TwitterReaderInstance = await TwitterReader.new();
@@ -40,81 +40,41 @@ async function prepareRequest(username: string) {
     const attestationType = "0x" + toHex("IJsonApi");
     const sourceType = "0x" + toHex("WEB2");
     
-    // const requestData = {
-    //     "attestationType": attestationType,
-    //     "sourceId": sourceType,
-    //     "requestBody": {
-    //         "url": `https://api.x.com/2/users/by/username/:${username}`,
-    //         "headers": {
-    //             "Authorization": `Bearer ${X_BEARER_TOKEN}`
-    //         },
-    //         "postprocessJq": `{
-    //             id: .data.id
-    //         }`,
-    //         "abi_signature": `
-    //         {\"components\": [
-    //             {\"internalType\": \"string\",\"name\": \"id\",\"type\": \"string\"}
-    //         ],
-    //         \"name\": \"UsernameIdResponse\",\"type\": \"tuple\"}`
-    //     }
-    // };
-    // console.log("Got through Request data:", requestData);
-
-    // // First get the user ID
-    // const userResponse = await fetch(
-    //     `${JQ_VERIFIER_URL_TESTNET}JsonApi/prepareRequest`,
-    //     {
-    //         method: "POST",
-    //         headers: {
-    //             "X-API-KEY": JQ_API_KEY,
-    //             "Content-Type": "application/json",
-    //         },
-    //         body: JSON.stringify(requestData),
-    //     },
-    // );
-    // const userData = await userResponse.json();
-    // console.log("User data response:", userData);
-    
-    // Check if the user data is valid
-    // if (!userData.data || userData.status === 'INVALID') {
-    //     throw new Error(`Failed to get user data: ${JSON.stringify(userData)}`);
-    // }
-    
-    // Now prepare request for the tweets with simplified fields
-    const tweetsRequestData = {
+    // Now prepare request for a single tweet with simplified fields
+    const tweetRequestData = {
         "attestationType": attestationType,
         "sourceId": sourceType,
         "requestBody": {
             "url": `https://raw.githubusercontent.com/ericliujt/DaoCare/refs/heads/master/sampleTwitter.json`,
             "postprocessJq": `{
                 id: .data.id,
-                username: .data.username, 
-                created_at: .data.created_at,
-                text: .data.text
+                text: .data.text,
+                username: .data.username,
+                createdAt: .data.created_at
             }`,
             "abi_signature": `
                 {\"components\": [
                     {\"internalType\": \"string\",\"name\": \"id\",\"type\": \"string\"},
                     {\"internalType\": \"string\",\"name\": \"text\",\"type\": \"string\"},
                     {\"internalType\": \"string\",\"name\": \"username\",\"type\": \"string\"},
-                    {\"internalType\": \"uint256\",\"name\": \"createdAt\",\"type\": \"uint256\"}
+                    {\"internalType\": \"string\",\"name\": \"createdAt\",\"type\": \"string\"}
                 ],
-                \"name\": \"TweetsResponse\",\"type\": \"tuple[]\"
-            }`
+                \"name\": \"TweetDTO\",\"type\": \"tuple\"}`
         }
     };
 
-    console.log("Tweets request data:", tweetsRequestData);
+    //console.log("Tweets request data:", tweetsRequestData);
+    //console.log("Tweets request data json stringify:", JSON.stringify(tweetsRequestData))
 
     const response = await fetch(
         `${JQ_VERIFIER_URL_TESTNET}JsonApi/prepareRequest`,
         {
             method: "POST",
             headers: {
-                "X-API-KEY": JQ_API_KEY,
+                ...(JQ_API_KEY ? { "X-API-KEY": JQ_API_KEY } : {}),
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(tweetsRequestData),
+            body: JSON.stringify(tweetRequestData),
         },
     );
     const data = await response.json();
@@ -165,6 +125,8 @@ async function submitRequest(username: string) {
 
 async function getProof(roundId: number, username: string) {
     const request = await prepareRequest(username);
+    console.log("request from getProof:", request);
+    console.log("body:", JSON.stringify({votingRoundId: roundId,requestBytes: request.abiEncodedRequest}));
     const proofAndData = await fetch(
         `${DA_LAYER_URL_COSTON}fdc/get-proof-round-id-bytes`,
         {
@@ -178,20 +140,29 @@ async function getProof(roundId: number, username: string) {
             }),
         },
     );
+    //console.log("proofAndData:", await proofAndData.json());
 
     return await proofAndData.json();
 }
 
 async function submitProof(roundId: number, username: string) {
     const dataAndProof = await getProof(roundId, username);
-    const twitterReader = await TwitterReader.at(TWITTER_READER_ADDRESS);
+    console.log("dataAndProof:", dataAndProof);
 
-    const tx = await twitterReader.addLatestTweets({
+    const twitterReader = await TwitterReader.at(TWITTER_READER_ADDRESS);
+    
+    const tx = await twitterReader.addTweet({
         merkleProof: dataAndProof.proof,
         data: dataAndProof.response,
     });
+    
+    const stored_tweets = await twitterReader.getAllTweets();
+
+    console.log("merkleProof:", dataAndProof.proof);
     console.log("Transaction:", tx.tx);
-    console.log("Stored tweets:", await twitterReader.getAllTweets());
+    console.log("Stored tweets:", stored_tweets);
+    const show_result = ["merkleProof:", dataAndProof.proof, "Transaction:", tx.tx, "Stored tweets:", stored_tweets]
+    return show_result
 }
 
 // Update the main function to store the deployed address
@@ -202,7 +173,7 @@ async function main() {
     // console.log("Contract deployed at:", readerAddress);
     
     // Replace with the Twitter username you want to fetch
-    const username = "VitalikButerin";
+    const username = "XDevelopers";
     console.log("Username:", username);
     
     // Submit the request to FDC using the newly deployed address
@@ -210,7 +181,7 @@ async function main() {
     console.log("Waiting for round to complete...");
     
     // Wait for some time to allow the round to complete
-    await new Promise(resolve => setTimeout(resolve, 180000)); // 3 minutes
+    await new Promise(resolve => setTimeout(resolve, 90000)); // 1.5 minutes
     
     // Submit the proof
     await submitProof(roundId, username);

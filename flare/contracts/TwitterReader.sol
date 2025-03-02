@@ -16,18 +16,14 @@ struct Tweet {
     string id;
     string text;
     string username;
-    uint256 createdAt;
+    string createdAt;
 }
 
 struct TweetDTO {
     string id;
     string text;
     string username;
-    uint256 createdAt;
-}
-
-struct TweetsResponse {
-    TweetDTO[] tweets;
+    string createdAt;
 }
 
 contract TwitterReader {
@@ -86,33 +82,5 @@ contract TwitterReader {
         returns (IFdcRequestFeeConfigurations)
     {
         return ContractRegistry.getFdcRequestFeeConfigurations();
-    }
-
-    function addLatestTweets(IJsonApi.Proof calldata data) public {
-        require(isJsonApiProofValid(data), "Invalid proof");
-
-        TweetsResponse memory response = abi.decode(
-            data.data.responseBody.abi_encoded_data,
-            (TweetsResponse)
-        );
-
-        for (uint i = 0; i < response.tweets.length; i++) {
-            TweetDTO memory dto = response.tweets[i];
-            
-            // Skip if tweet already exists
-            if (bytes(tweets[dto.id].id).length > 0) continue;
-
-            Tweet memory tweet = Tweet({
-                id: dto.id,
-                text: dto.text,
-                username: dto.username,
-                createdAt: dto.createdAt
-            });
-
-            tweets[dto.id] = tweet;
-            tweetIds.push(dto.id);
-
-            emit TweetAdded(dto.id, dto.text, dto.username);
-        }
     }
 } 
