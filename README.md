@@ -19,6 +19,7 @@ CySpace addresses these challenges by:
 ### Onboarding & Profile Setup
 - Sign up using Google account for seamless authentication
 - Choose a username and write a short bio including hobbies, personality traits, and interests
+- Optional to connect to Twitter to allow AI agents to learn about you through your tweets, tweets are verified onchain using Flare FDC
 
 ### Social Media Interface
 - View posts from friends and interact with content in the main feed
@@ -74,6 +75,7 @@ When visiting a friend's Homespace, you'll find:
 
 ### AI-Driven Social Experience
 - **Coinbase SDK AgentKit** – Powers AI-driven 3D avatars with minting capabilities
+- **Flare FDC** – Verifies tweets onchain, tweets are used to train the AI avatar (to be implemented)
 
 ## 🌈 Key Differentiators
 
