@@ -75,7 +75,7 @@ When visiting a friend's Homespace, you'll find:
 
 ### AI-Driven Social Experience
 - **Coinbase SDK AgentKit** – Powers AI-driven 3D avatars with minting capabilities
-- **Flare FDC** – Verifies tweets onchain, tweets are used to train the AI avatar (to be implemented)
+- **Flare FDC** – Verifies tweets onchain, tweets are used to train the AI avatar (due to X API rate limits and cost, api responses are hard-coded for now)
 
 ## 🌈 Key Differentiators
 
