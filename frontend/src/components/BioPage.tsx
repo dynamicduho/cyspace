@@ -3,13 +3,29 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from './supabaseClient';
 
+// Define the TwitterProof type to fix TypeScript errors
+interface TwitterProof {
+    merkleProof: string[];
+    transaction: string;
+    round: string;
+    storedTweets: {
+        id: string;
+        text: string;
+        username: string;
+        createdAt: string;
+    }[];
+}
+
 export default function BioPage() {
     const oktoClient = useOkto();
     const userSWA = oktoClient.userSWA;
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [bio, setBio] = useState('');
-    const [error, setError] = useState('');
+    const [errorMsg, setErrorMsg] = useState('');
+    const [isConnectingTwitter, setIsConnectingTwitter] = useState(false);
+    const [twitterProof, setTwitterProof] = useState<TwitterProof | null>(null);
+    const [twitterUsername, setTwitterUsername] = useState('');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -26,7 +42,7 @@ export default function BioPage() {
 
         try {
             // Insert data into Supabase
-            const { data, error } = await supabase
+            const { error } = await supabase
                 .from('users')  // Replace with your table name
                 .insert([userData])
                 .select();
@@ -40,7 +56,45 @@ export default function BioPage() {
             navigate(`/home`);
         } catch (err) {
             console.error('Error saving to Supabase:', err);
-            setError('Failed to save user data');
+            setErrorMsg('Failed to save user data');
+        }
+    };
+
+    const connectTwitter = async () => {
+        try {
+            // Prompt user for Twitter username
+            const twitterUser = prompt("Enter your Twitter username (without @):");
+            if (!twitterUser) {
+                return; // User cancelled the prompt
+            }
+            
+            setIsConnectingTwitter(true);
+            setTwitterUsername(twitterUser);
+            
+            // Add a 30-second wait
+            await new Promise(resolve => setTimeout(resolve, 30000));
+            
+            // Call backend endpoint to run TwitterFDC.ts
+            const response = await fetch('http://localhost:3001/connect-twitter', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username: twitterUser }),
+            });
+            
+            if (!response.ok) {
+                throw new Error('Failed to connect Twitter');
+            }
+            
+            const data = await response.json();
+            setTwitterProof(data);
+            
+        } catch (err) {
+            console.error('Error connecting Twitter:', err);
+            alert('Failed to connect Twitter. Please try again.');
+        } finally {
+            setIsConnectingTwitter(false);
         }
     };
 
@@ -112,6 +166,44 @@ export default function BioPage() {
                                         required
                                     />
                                 </div>
+                                
+                                {/* Twitter Connect Section */}
+                                <div className="mt-4 border-t pt-4">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <h3 className="text-sm font-medium text-gray-700">Optional: Connect to Twitter</h3>
+                                            <p className="text-xs text-gray-500">Connect to Twitter so your AI agent can learn through your tweets. Tweets will be verified onchain using Flare FDC. Note that this process takes up to one minute.</p>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={connectTwitter}
+                                            disabled={isConnectingTwitter}
+                                            className="ml-3 px-3 py-1 bg-blue-400 hover:bg-blue-500 text-white rounded-full border-2 border-b-3 border-r-3 border-blue-600 transition duration-200 text-xs disabled:opacity-50"
+                                        >
+                                            {isConnectingTwitter ? 'Connecting...' : 'Connect Twitter'}
+                                        </button>
+                                    </div>
+                                    
+                                    {/* Display Twitter Proof */}
+                                    {twitterProof && (
+                                        <div className="mt-3 p-3 bg-gray-50 rounded-lg border border-gray-200 text-xs overflow-auto max-h-40">
+                                            <h4 className="font-medium mb-1">Connected to Twitter: @{twitterUsername}</h4>
+                                            <div className="text-gray-600">
+                                                <p className="mb-1"><strong>Merkle Proof:</strong></p>
+                                                <pre className="whitespace-pre-wrap break-all">{JSON.stringify(twitterProof.merkleProof, null, 2)}</pre>
+                                                <p className="mt-2 mb-1"><strong>Transaction:</strong></p>
+                                                <p className="break-all">{twitterProof.transaction}</p>
+                                                <p className="mt-2 mb-1"><strong>Round progress:</strong></p>
+                                                <p className="break-all">https://coston-systems-explorer.flare.rocks/voting-epoch/916993?tab=fdc</p>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                                
+                                {errorMsg && (
+                                    <div className="text-red-500 text-sm">{errorMsg}</div>
+                                )}
+                                
                                 <button
                                     type="submit"
                                     className="w-full py-2 bg-yellow-400 hover:bg-yellow-500 text-gray-900 rounded-full border-2 border-b-4 border-r-4 border-yellow-600 transition duration-200 text-sm"
