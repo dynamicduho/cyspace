@@ -104,6 +104,7 @@ When visiting a friend's Homespace, you'll find:
 - Support for direct wallet connections for crypto-native users
 - Customizable profile badges or NFT-based friendship tokens
 - Token drops or exclusive rewards for long-term meaningful interactions
+- More media sources to train the AI avatar
 
 ---
 
