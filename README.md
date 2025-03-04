@@ -119,7 +119,7 @@ Follow these steps to set up and run CySpace locally:
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/cyspace.git
+git clone https://github.com/dynamicduho/cyspace.git
 cd cyspace
 ```
 
