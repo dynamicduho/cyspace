@@ -106,6 +106,106 @@ When visiting a friend's Homespace, you'll find:
 - Token drops or exclusive rewards for long-term meaningful interactions
 - More media sources to train the AI avatar
 
+## 🚀 How to Run CySpace on Your Local Machine
+
+Follow these steps to set up and run CySpace locally:
+
+### Prerequisites
+
+- Node.js (v16 or higher)
+- npm or pnpm
+- Git
+
+### Clone the Repository
+
+```bash
+git clone https://github.com/yourusername/cyspace.git
+cd cyspace
+```
+
+### Setting Up the Main Frontend
+
+```bash
+# Navigate to the frontend directory
+cd frontend
+
+# Install dependencies
+npm install
+# or
+pnpm install
+
+# Create .env file from example
+cp env.example .env
+# Configure your environment variables as needed
+
+# Start the development server
+npm run dev
+# or
+pnpm dev
+```
+
+The main frontend will be available at `http://localhost:5173` (or the port specified in your terminal).
+
+### Setting Up the Homespace Frontend
+
+```bash
+# Navigate to the homespace directory from the project root
+cd homespace
+
+# Install dependencies
+npm install
+
+# Start the development server
+npm run dev
+```
+
+The homespace frontend will be available at `http://localhost:5174` (or the port specified in your terminal).
+
+### Setting Up the Main Backend
+
+```bash
+# Navigate to the backend directory from the project root
+cd backend
+
+# Install dependencies
+npm install
+
+# Start the server
+node app.js
+```
+
+The main backend will be available at `http://localhost:3000`.
+
+### Setting Up the AgentKit User Avatar Backend
+
+```bash
+# Navigate to the agentkit-user-avatar directory from the project root
+cd agentkit-user-avatar
+
+# Install dependencies
+npm install
+
+# Create .env file if it doesn't exist and configure as needed
+# Make sure to set up any required API keys
+
+# Start the server
+npm start
+# or
+node server.js
+```
+
+The AgentKit User Avatar backend will be available at `http://localhost:3001`.
+
+### Accessing the Application
+
+Once all services are running, you can access the full CySpace application by navigating to the main frontend URL in your browser: `http://localhost:5173`
+
+### Troubleshooting
+
+- If you encounter port conflicts, you can modify the port settings in the respective configuration files.
+- Make sure all required environment variables are properly set in the .env files.
+- Check the console output for any error messages if a service fails to start.
+
 ---
 
 *CySpace was built entirely during the BUIDLathon.*
